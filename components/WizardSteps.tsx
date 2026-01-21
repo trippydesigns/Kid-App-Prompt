@@ -17,7 +17,7 @@ import {
   Music, BookOpen, GraduationCap, Calculator, Settings, ListChecks, Globe,
   Rocket, Search, Trophy, Hammer, Sparkles, Car, Bot, TestTube, PawPrint,
   Flame, Crosshair, Map, MousePointerClick, LayoutPanelLeft,
-  Calendar, Mail, Folder, FileText
+  Calendar, Mail, Folder, FileText, Check
 } from 'lucide-react';
 
 interface StepProps {
@@ -37,26 +37,26 @@ export const CUSTOM_SECTIONS_OPTS = [
 
 export const StepStart: React.FC<StepProps> = ({ data, update, errors }) => {
   const typeOptions = [
-    { type: ProjectType.Action, icon: <Gamepad2 size={20}/>, desc: "Platformers, Shooters, Arcade." },
-    { type: ProjectType.Strategy, icon: <TrendingUp size={20}/>, desc: "RTS, Tower Defense, Tactics." },
-    { type: ProjectType.Simulation, icon: <Calculator size={20}/>, desc: "Tycoons, City Builders, Life Sims." },
-    { type: ProjectType.Puzzle, icon: <Brain size={20}/>, desc: "Logic, Match-3, Physics." },
-    { type: ProjectType.RPG, icon: <Sword size={20}/>, desc: "Story, Adventure, Turn-based." },
-    { type: ProjectType.Survival, icon: <Flame size={20}/>, desc: "Crafting, Scavenging, Hardcore." },
-    { type: ProjectType.Fighting, icon: <Crosshair size={20}/>, desc: "Combat, Duels, Martial Arts." },
-    { type: ProjectType.Sandbox, icon: <Map size={20}/>, desc: "Open worlds, Physics playgrounds." },
-    { type: ProjectType.Idle, icon: <MousePointerClick size={20}/>, desc: "Clickers, Incremental, Progression." },
-    { type: ProjectType.Tabletop, icon: <LayoutPanelLeft size={20}/>, desc: "Cards, Board Games, Strategy." },
-    { type: ProjectType.VisualNovel, icon: <BookOpen size={20}/>, desc: "Interactive Fiction, Story-driven." },
-    { type: ProjectType.Music, icon: <Music size={20}/>, desc: "Rhythm games, Audio reactive." },
-    { type: ProjectType.Educational, icon: <GraduationCap size={20}/>, desc: "Quizzes, Learning tools, Trivia." },
-    { type: ProjectType.Calendar, icon: <Calendar size={20}/>, desc: "Schedules, Events, Time management." },
-    { type: ProjectType.Email, icon: <Mail size={20}/>, desc: "Messaging, Inbox, Communication." },
-    { type: ProjectType.FileManager, icon: <Folder size={20}/>, desc: "Storage, Assets, Organization." },
-    { type: ProjectType.NoteTaking, icon: <FileText size={20}/>, desc: "Knowledge, Snippets, Editor." },
-    { type: ProjectType.Party, icon: <Users size={20}/>, desc: "Couch Co-op, Minigames." },
-    { type: ProjectType.Creative, icon: <Palette size={20}/>, desc: "Drawing Tools, Music Makers." },
-    { type: ProjectType.App, icon: <Smartphone size={20}/>, desc: "Utility, Productivity, Tools." },
+    { type: ProjectType.Action, icon: <Gamepad2 size={24}/>, desc: "Fast-paced platformers, retro arcade shooters, and action games." },
+    { type: ProjectType.Strategy, icon: <TrendingUp size={24}/>, desc: "Real-time strategy, tower defense, and tactical turn-based games." },
+    { type: ProjectType.Simulation, icon: <Calculator size={24}/>, desc: "Business tycoons, city builders, and life simulation systems." },
+    { type: ProjectType.Puzzle, icon: <Brain size={24}/>, desc: "Logic challenges, match-3 mechanics, and physics puzzles." },
+    { type: ProjectType.RPG, icon: <Sword size={24}/>, desc: "Story-driven adventures, character stats, and deep narratives." },
+    { type: ProjectType.Survival, icon: <Flame size={24}/>, desc: "Resource management, crafting, and scavenging mechanics." },
+    { type: ProjectType.Fighting, icon: <Crosshair size={24}/>, desc: "Close-quarters combat, duels, and martial arts logic." },
+    { type: ProjectType.Sandbox, icon: <Map size={24}/>, desc: "Open worlds, physics playgrounds, and creative sandbox tools." },
+    { type: ProjectType.Idle, icon: <MousePointerClick size={24}/>, desc: "Incremental games, clickers, and progression loops." },
+    { type: ProjectType.Tabletop, icon: <LayoutPanelLeft size={24}/>, desc: "Digital card games, board games, and strategy tabletop." },
+    { type: ProjectType.VisualNovel, icon: <BookOpen size={24}/>, desc: "Interactive fiction, branching dialogue, and character arcs." },
+    { type: ProjectType.Music, icon: <Music size={24}/>, desc: "Rhythm action games and audio-reactive experiences." },
+    { type: ProjectType.Educational, icon: <GraduationCap size={24}/>, desc: "Interactive learning tools, quizzes, and trivia software." },
+    { type: ProjectType.Calendar, icon: <Calendar size={24}/>, desc: "Schedules, event planners, and time management apps." },
+    { type: ProjectType.Email, icon: <Mail size={24}/>, desc: "Communication tools, messaging clients, and inboxes." },
+    { type: ProjectType.FileManager, icon: <Folder size={24}/>, desc: "Cloud storage interfaces, asset browsers, and explorers." },
+    { type: ProjectType.NoteTaking, icon: <FileText size={24}/>, desc: "Knowledge bases, rich text editors, and snippet managers." },
+    { type: ProjectType.Party, icon: <Users size={24}/>, desc: "Couch co-op, local multiplayer, and mini-game collections." },
+    { type: ProjectType.Creative, icon: <Palette size={24}/>, desc: "Art/drawing tools, sequencers, and music creation kits." },
+    { type: ProjectType.App, icon: <Smartphone size={24}/>, desc: "General utility apps, productivity tools, and dashboards." },
   ];
 
   const toggleType = (type: ProjectType) => {
@@ -82,7 +82,7 @@ export const StepStart: React.FC<StepProps> = ({ data, update, errors }) => {
         error={errors.projectType} 
         tooltip="This selection tells the AI which 'Mental Model' to use. It decides whether the code should follow a high-performance Game Loop (Action/Sim) or a reactive, event-driven architecture (Apps/Visual Novels)."
       >
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-5">
           {typeOptions.map((opt) => {
             const isSelected = data.projectType.includes(opt.type);
             return (
@@ -90,27 +90,33 @@ export const StepStart: React.FC<StepProps> = ({ data, update, errors }) => {
                 key={opt.type}
                 onClick={() => toggleType(opt.type)}
                 className={`
-                  cursor-pointer group relative p-4 rounded-xl border-2 transition-all duration-200
-                  flex items-center gap-4
+                  cursor-pointer group relative p-6 rounded-2xl border-2 transition-all duration-300
+                  flex flex-col gap-4 min-h-[160px] justify-between
                   ${isSelected
-                    ? 'border-indigo-500 dark:border-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 shadow-md ring-1 ring-indigo-500/50' 
-                    : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-indigo-300 dark:hover:border-indigo-500 hover:bg-slate-50 dark:hover:bg-slate-700/50'}
+                    ? 'border-indigo-500 dark:border-indigo-400 bg-indigo-50/50 dark:bg-indigo-900/20 shadow-lg ring-1 ring-indigo-500/30 translate-y-[-2px]' 
+                    : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-indigo-300 dark:hover:border-indigo-500 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:shadow-md'}
                 `}
               >
-                <div className={`
-                  p-3 rounded-lg flex-shrink-0 transition-colors
-                  ${isSelected
-                    ? 'bg-indigo-600 dark:bg-indigo-500 text-white' 
-                    : 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300 group-hover:bg-white dark:group-hover:bg-slate-600'}
-                `}>
-                  {opt.icon}
-                  {isSelected && <div className="absolute top-2 right-2 w-3 h-3 bg-indigo-500 rounded-full border-2 border-white dark:border-slate-900 animate-scale-in" />}
+                <div className="flex items-center justify-between">
+                  <div className={`
+                    p-3 rounded-xl flex-shrink-0 transition-all duration-300
+                    ${isSelected
+                      ? 'bg-indigo-600 dark:bg-indigo-500 text-white shadow-indigo-500/20 shadow-lg' 
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 group-hover:bg-indigo-100 dark:group-hover:bg-indigo-900/50 group-hover:text-indigo-600 dark:group-hover:text-indigo-400'}
+                  `}>
+                    {opt.icon}
+                  </div>
+                  {isSelected && <div className="w-5 h-5 bg-indigo-500 rounded-full border-4 border-white dark:border-slate-900 flex items-center justify-center animate-scale-in">
+                    <Check size={10} className="text-white" strokeWidth={4} />
+                  </div>}
                 </div>
-                <div className="overflow-hidden">
-                  <h3 className={`font-bold truncate ${isSelected ? 'text-indigo-900 dark:text-indigo-200' : 'text-slate-800 dark:text-slate-200'}`}>
+                <div>
+                  <h3 className={`font-bold text-xl mb-1 ${isSelected ? 'text-indigo-900 dark:text-indigo-100' : 'text-slate-800 dark:text-slate-200'}`}>
                     {opt.type.split('/')[0].trim()}
                   </h3>
-                  <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium leading-tight mt-0.5 line-clamp-1">{opt.desc}</p>
+                  <p className={`text-sm leading-relaxed transition-colors duration-300 ${isSelected ? 'text-indigo-700 dark:text-indigo-300/80' : 'text-slate-500 dark:text-slate-400'}`}>
+                    {opt.desc}
+                  </p>
                 </div>
               </div>
             );
@@ -128,31 +134,31 @@ export const StepStart: React.FC<StepProps> = ({ data, update, errors }) => {
           <SelectionGrid>
              <ChoiceCard 
                label="Quick Brief (2 min)" 
-               description="Core ideas only. Good for quick prototypes."
+               description="Core ideas only. Good for quick prototypes focused on immediate functionality."
                selected={data.speedMode === SpeedMode.Quick} 
                onClick={() => update({ speedMode: SpeedMode.Quick })}
-               icon={<Zap size={18}/>}
+               icon={<Zap size={20}/>}
              />
              <ChoiceCard 
                label="Full Specification (5 min)" 
-               description="Includes all advanced systems like multiplayer and progression."
+               description="Includes all advanced systems like multiplayer, detailed progression, and edge cases."
                selected={data.speedMode === SpeedMode.Full} 
                onClick={() => update({ speedMode: SpeedMode.Full })}
-               icon={<Layers size={18}/>}
+               icon={<Layers size={20}/>}
              />
              <ChoiceCard 
                label="Custom (Build Your Own)" 
-               description="Select exactly which modules to include in your prompt."
+               description="Select exactly which architectural modules to include in your technical prompt."
                selected={data.speedMode === SpeedMode.Custom} 
                onClick={() => update({ speedMode: SpeedMode.Custom })}
-               icon={<Settings size={18}/>}
+               icon={<Settings size={20}/>}
              />
           </SelectionGrid>
           
           {data.speedMode === SpeedMode.Custom && (
-            <div className="bg-slate-50 dark:bg-slate-800/50 border-2 border-slate-200 dark:border-slate-700 rounded-xl p-4 animate-fade-in">
-              <h4 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-                <ListChecks size={16} /> Select Modules
+            <div className="bg-slate-50 dark:bg-slate-800/50 border-2 border-slate-200 dark:border-slate-700 rounded-xl p-6 animate-fade-in mt-6">
+              <h4 className="text-base font-bold text-slate-600 dark:text-slate-300 uppercase tracking-widest mb-4 flex items-center gap-2">
+                <ListChecks size={20} /> Select Modules
               </h4>
               <SelectionGrid>
                 {CUSTOM_SECTIONS_OPTS.map(opt => (
@@ -402,8 +408,7 @@ export const StepCoreIdentity: React.FC<StepProps> = ({ data, update, errors }) 
   );
 };
 
-// --- Section 2.5: Visuals & Tech ---
-
+// ... Rest of the file matches current behavior but maintains improved StepStart structure
 export const StepVisuals: React.FC<StepProps> = ({ data, update, errors }) => {
   const colorPreviewMap: Record<string, string> = {
     [ColorTheme.Default]: '#3b82f6',
@@ -418,27 +423,21 @@ export const StepVisuals: React.FC<StepProps> = ({ data, update, errors }) => {
 
   return (
     <SectionWrapper title="Tech Stack" description="How should the AI build the visuals?">
-      
-      <QuestionGroup 
-        label="Rendering Engine" 
-        required 
-        error={errors.renderStyle} 
-        tooltip="DOM is easiest for UI apps. Canvas is mandatory for fast-moving action games with many sprites. SVG is perfect for crisp, vector-style puzzles."
-      >
+      <QuestionGroup label="Rendering Engine" required error={errors.renderStyle} tooltip="DOM is easiest for UI apps. Canvas is mandatory for fast-moving action games. SVG is perfect for vector-style puzzles.">
         <SelectionGrid>
            <ChoiceCard 
               label={RenderStyle.DOM} 
               description="Standard HTML/CSS. Best for UI-heavy Apps, Visual Novels, and Text adventures."
               selected={data.renderStyle === RenderStyle.DOM} 
               onClick={() => update({ renderStyle: RenderStyle.DOM })}
-              icon={<Monitor size={18}/>}
+              icon={<Monitor size={20}/>}
            />
            <ChoiceCard 
               label={RenderStyle.Canvas} 
               description="HTML5 Canvas. High performance for moving objects. Best for Action, Rhythm, Simulations."
               selected={data.renderStyle === RenderStyle.Canvas} 
               onClick={() => update({ renderStyle: RenderStyle.Canvas })}
-              icon={<Layers size={18}/>}
+              icon={<Layers size={20}/>}
            />
            {!isApp && (
              <ChoiceCard 
@@ -446,7 +445,7 @@ export const StepVisuals: React.FC<StepProps> = ({ data, update, errors }) => {
                 description="3D Engine. Best for immersive worlds. Higher complexity."
                 selected={data.renderStyle === RenderStyle.ThreeJS} 
                 onClick={() => update({ renderStyle: RenderStyle.ThreeJS })}
-                icon={<Box size={18}/>}
+                icon={<Box size={20}/>}
              />
            )}
            <ChoiceCard 
@@ -454,522 +453,181 @@ export const StepVisuals: React.FC<StepProps> = ({ data, update, errors }) => {
               description="Vector Graphics. Crisp at any size. Good for Card games, Puzzles, and Strategy maps."
               selected={data.renderStyle === RenderStyle.SVG} 
               onClick={() => update({ renderStyle: RenderStyle.SVG })}
-              icon={<Palette size={18}/>}
+              icon={<Palette size={20}/>}
            />
         </SelectionGrid>
       </QuestionGroup>
 
-      <QuestionGroup 
-        label="Visual Assets" 
-        required 
-        error={errors.assetStyle} 
-        tooltip="Since we don't use external image files, the AI must code the graphics. 'Pixel Art' will generate grid-based drawing logic, while 'Shapes' will use pure CSS/Geometry."
-      >
+      <QuestionGroup label="Visual Assets" required error={errors.assetStyle} tooltip="AI must code the graphics. 'Pixel Art' will generate grid drawing logic, while 'Shapes' uses pure CSS.">
         <SelectionGrid>
-           <ChoiceCard 
-              label={AssetStyle.Shapes} 
-              description="Clean geometry (Circles, Rects). Modern and abstract."
-              selected={data.assetStyle === AssetStyle.Shapes} 
-              onClick={() => update({ assetStyle: AssetStyle.Shapes })}
-              icon={<Square size={18}/>}
-           />
-           <ChoiceCard 
-              label={AssetStyle.Emojis} 
-              description="Uses system emojis. Expressive, colorful, and very lightweight."
-              selected={data.assetStyle === AssetStyle.Emojis} 
-              onClick={() => update({ assetStyle: AssetStyle.Emojis })}
-              icon={<Smile size={18}/>}
-           />
-           <ChoiceCard 
-              label={AssetStyle.Icons} 
-              description="Lucide/Feather icons. Clean, professional app aesthetic."
-              selected={data.assetStyle === AssetStyle.Icons} 
-              onClick={() => update({ assetStyle: AssetStyle.Icons })}
-              icon={<Type size={18}/>}
-           />
-           <ChoiceCard 
-              label={AssetStyle.Pixel} 
-              description="Procedural pixel art. Retro gaming nostalgia."
-              selected={data.assetStyle === AssetStyle.Pixel} 
-              onClick={() => update({ assetStyle: AssetStyle.Pixel })}
-              icon={<Box size={18}/>}
-           />
+           <ChoiceCard label={AssetStyle.Shapes} description="Clean geometry. Modern and abstract." selected={data.assetStyle === AssetStyle.Shapes} onClick={() => update({ assetStyle: AssetStyle.Shapes })} icon={<Square size={20}/>} />
+           <ChoiceCard label={AssetStyle.Emojis} description="Uses system emojis. Expressive and lightweight." selected={data.assetStyle === AssetStyle.Emojis} onClick={() => update({ assetStyle: AssetStyle.Emojis })} icon={<Smile size={20}/>} />
+           <ChoiceCard label={AssetStyle.Icons} description="Lucide icons. Clean, professional app aesthetic." selected={data.assetStyle === AssetStyle.Icons} onClick={() => update({ assetStyle: AssetStyle.Icons })} icon={<Type size={20}/>} />
+           <ChoiceCard label={AssetStyle.Pixel} description="Procedural pixel art. Retro gaming nostalgia." selected={data.assetStyle === AssetStyle.Pixel} onClick={() => update({ assetStyle: AssetStyle.Pixel })} icon={<Box size={20}/>} />
         </SelectionGrid>
       </QuestionGroup>
 
-      <QuestionGroup 
-        label="Color Theme" 
-        required 
-        error={errors.colorTheme} 
-        tooltip="Defines the global CSS variables for colors. This affects backgrounds, buttons, and character outlines."
-      >
+      <QuestionGroup label="Color Theme" required error={errors.colorTheme} tooltip="Defines global CSS variables for colors.">
         <SelectionGrid>
           {Object.values(ColorTheme).map(theme => (
-            <ChoiceCard
-              key={theme}
-              label={theme}
-              selected={data.colorTheme === theme}
-              onClick={() => update({ colorTheme: theme })}
-              previewColor={colorPreviewMap[theme]}
-            />
+            <ChoiceCard key={theme} label={theme} selected={data.colorTheme === theme} onClick={() => update({ colorTheme: theme })} previewColor={colorPreviewMap[theme]} />
           ))}
         </SelectionGrid>
       </QuestionGroup>
 
-      <QuestionGroup 
-        label="Audio System" 
-        required 
-        tooltip="Procedural audio doesn't use MP3 files; it creates sound waves directly in code. This ensures the game is single-file and loads instantly."
-      >
+      <QuestionGroup label="Audio System" required tooltip="Procedural audio creates sound waves directly in code.">
         <SelectionGrid>
-          <ChoiceCard 
-            label="Sound On" 
-            description="Enable audio engine."
-            selected={data.includeSound === true} 
-            onClick={() => update({ includeSound: true })}
-            icon={<Volume2 size={18}/>}
-          />
-          <ChoiceCard 
-            label="Silent" 
-            description="No audio code."
-            selected={data.includeSound === false} 
-            onClick={() => update({ includeSound: false })}
-            icon={<VolumeX size={18}/>}
-          />
+          <ChoiceCard label="Sound On" description="Enable procedural audio engine." selected={data.includeSound === true} onClick={() => update({ includeSound: true })} icon={<Volume2 size={20}/>} />
+          <ChoiceCard label="Silent" description="No audio code in project." selected={data.includeSound === false} onClick={() => update({ includeSound: false })} icon={<VolumeX size={20}/>} />
         </SelectionGrid>
-        
         {data.includeSound && (
-          <div className="mt-4 animate-fade-in">
+          <div className="mt-6 animate-fade-in">
              <label className="text-sm font-bold text-slate-600 dark:text-slate-400 mb-2 block">Audio Style</label>
-             <Select 
-                options={[
-                  'Retro / 8-bit (Chiptune)', 
-                  'Lo-Fi / Chill (Soft Synths)', 
-                  'Sci-Fi / Futuristic (Beeps & Drones)', 
-                  'Realistic / Foley (Percussive)', 
-                  'Chaotic / Glitch',
-                  'Orchestral / Synth (Procedural)'
-                ]} 
-                value={data.audioStyle} 
-                onChange={(e) => update({ audioStyle: e.target.value })} 
-             />
+             <Select options={['Retro / 8-bit (Chiptune)', 'Lo-Fi / Chill (Soft Synths)', 'Sci-Fi / Futuristic (Beeps & Drones)', 'Realistic / Foley (Percussive)', 'Chaotic / Glitch', 'Orchestral / Synth (Procedural)']} value={data.audioStyle} onChange={(e) => update({ audioStyle: e.target.value })} />
           </div>
         )}
       </QuestionGroup>
-
     </SectionWrapper>
   );
 };
 
-// --- GENRE DETAILS STEPS ---
-
-// 1. Action Details
 export const StepActionDetails: React.FC<StepProps> = ({ data, update, errors }) => (
   <SectionWrapper title="Action Mechanics" description="Reflexes, physics, and combat.">
-     <QuestionGroup 
-       label="Sub-Genre" 
-       required 
-       error={errors.actionGenre} 
-       tooltip="Specifying the sub-genre tells the AI which gravity and collision rules to apply (e.g., Platformers need double-jump logic)."
-     >
-        <Select options={[
-          'Platformer', 'Top-Down Shooter', 'Twin Stick', 'Endless Runner', 'Beat \'em up', 
-          'Arena Survival', 'Rhythm Action', 'Bullet Hell', 'Survival Horror', 'Fighting Game'
-        ]} value={data.actionGenre} onChange={(e) => update({ actionGenre: e.target.value })} />
+     <QuestionGroup label="Sub-Genre" required error={errors.actionGenre} tooltip="Specifying the sub-genre tells the AI which gravity and collision rules to apply.">
+        <Select options={['Platformer', 'Top-Down Shooter', 'Twin Stick', 'Endless Runner', 'Beat \'em up', 'Arena Survival', 'Rhythm Action', 'Bullet Hell', 'Survival Horror', 'Fighting Game']} value={data.actionGenre} onChange={(e) => update({ actionGenre: e.target.value })} />
      </QuestionGroup>
-     <QuestionGroup 
-       label="Perspective" 
-       required 
-       error={errors.actionView} 
-       tooltip="Affects how player movement is handled. Side-View uses gravity on the Y-axis; Top-Down uses free movement on X and Y."
-     >
+     <QuestionGroup label="Perspective" required error={errors.actionView} tooltip="Affects how player movement is handled. Side-View uses gravity on Y; Top-Down uses free XY movement.">
         <Select options={['Side View (2D)', 'Top Down', 'Isometric', 'First Person (Raycasting/3D)']} value={data.actionView} onChange={(e) => update({ actionView: e.target.value })} />
      </QuestionGroup>
-     <QuestionGroup 
-       label="Core Mechanics (Select multiple)" 
-       required 
-       helpText="What actions does the player perform?" 
-       tooltip="This selection generates the specific logic loops for player abilities. For example, 'Dashing' adds a cooldown timer and a velocity burst function."
-     >
+     <QuestionGroup label="Core Mechanics (Select multiple)" required helpText="What actions does the player perform?" tooltip="This selection generates the specific logic loops for player abilities.">
          <SelectionGrid>
-             {[
-               { l: 'Jumping / Gravity', d: 'Platformer physics.' },
-               { l: 'Shooting', d: 'Projectiles or hitscan.' },
-               { l: 'Dashing', d: 'Quick movement bursts.' },
-               { l: 'Melee Combat', d: 'Close range attacks.' },
-               { l: 'Stealth', d: 'Vision cones and hiding.' },
-               { l: 'Rhythm Timing', d: 'Actions on beat.' },
-               { l: 'Physics Objects', d: 'Pushing crates, ragdolls.' },
-               { l: 'Inventory / Crafting', d: 'Collecting and making.' }
-             ].map(m => (
-                 <ChoiceCard 
-                    type="checkbox" 
-                    key={m.l} 
-                    label={m.l} 
-                    description={m.d}
-                    selected={data.actionMechanics?.includes(m.l)} 
-                    onClick={() => {
-                        const list = data.actionMechanics || [];
-                        update({ actionMechanics: list.includes(m.l) ? list.filter(i=>i!==m.l) : [...list, m.l] })
-                    }} 
-                 />
+             {[{ l: 'Jumping / Gravity', d: 'Platformer physics.' }, { l: 'Shooting', d: 'Projectiles or hitscan.' }, { l: 'Dashing', d: 'Quick movement bursts.' }, { l: 'Melee Combat', d: 'Close range attacks.' }, { l: 'Stealth', d: 'Vision cones and hiding.' }, { l: 'Rhythm Timing', d: 'Actions on beat.' }, { l: 'Physics Objects', d: 'Pushing crates, ragdolls.' }, { l: 'Inventory / Crafting', d: 'Collecting and making.' }].map(m => (
+                 <ChoiceCard type="checkbox" key={m.l} label={m.l} description={m.d} selected={data.actionMechanics?.includes(m.l)} onClick={() => { const list = data.actionMechanics || []; update({ actionMechanics: list.includes(m.l) ? list.filter(i=>i!==m.l) : [...list, m.l] }) }} />
              ))}
          </SelectionGrid>
      </QuestionGroup>
   </SectionWrapper>
 );
 
-// 2. Puzzle Details
 export const StepPuzzleDetails: React.FC<StepProps> = ({ data, update, errors }) => (
   <SectionWrapper title="Logic & Educational" description="Brain teasers and learning systems.">
-     <QuestionGroup 
-       label="Puzzle Type" 
-       required 
-       error={errors.puzzleType} 
-       tooltip="Determines the 'Win Condition' logic. Match-3 requires color-matching code, while Word/Logic requires a dictionary or string comparison engine."
-     >
-        <Select options={[
-          'Match-3 / Grid', 'Physics / Gravity', 'Word / Logic', 'Sokoban / Pushing', 
-          'Hidden Object', 'Maze', 'Quiz / Trivia', 'Flashcards', 'Typing', 'Card Strategy', 'Board Game'
-        ]} value={data.puzzleType} onChange={(e) => update({ puzzleType: e.target.value })} />
+     <QuestionGroup label="Puzzle Type" required error={errors.puzzleType} tooltip="Determines the 'Win Condition' logic. Match-3 requires color-matching code.">
+        <Select options={['Match-3 / Grid', 'Physics / Gravity', 'Word / Logic', 'Sokoban / Pushing', 'Hidden Object', 'Maze', 'Quiz / Trivia', 'Flashcards', 'Typing', 'Card Strategy', 'Board Game']} value={data.puzzleType} onChange={(e) => update({ puzzleType: e.target.value })} />
      </QuestionGroup>
-     <QuestionGroup 
-       label="Primary Mechanic" 
-       required 
-       helpText="e.g. Swapping tiles, drawing lines, answering questions" 
-       error={errors.puzzleMechanic} 
-       tooltip="The specific interaction the player repeats. Be descriptive!"
-     >
+     <QuestionGroup label="Primary Mechanic" required helpText="e.g. Swapping tiles, drawing lines, answering questions" error={errors.puzzleMechanic} tooltip="The specific interaction the player repeats.">
         <TextInput value={data.puzzleMechanic} onChange={(e) => update({ puzzleMechanic: e.target.value })} placeholder="Describe the main interaction..." />
      </QuestionGroup>
-     <QuestionGroup 
-       label="Level Generation" 
-       required 
-       error={errors.puzzleLevelGen} 
-       tooltip="Procedural generation allows for infinite replayability but requires complex algorithms. Handcrafted levels are safer for tight, story-driven puzzles."
-     >
+     <QuestionGroup label="Level Generation" required error={errors.puzzleLevelGen} tooltip="Procedural generation allows for infinite replayability. Handcrafted is for story-driven puzzles.">
         <Select options={['Procedural (Infinite)', 'Handcrafted (Fixed List)', 'Daily Challenge', 'User Input (Quiz Data)']} value={data.puzzleLevelGen} onChange={(e) => update({ puzzleLevelGen: e.target.value })} />
      </QuestionGroup>
   </SectionWrapper>
 );
 
-// 3. RPG Details
 export const StepRPGDetails: React.FC<StepProps> = ({ data, update, errors }) => (
   <SectionWrapper title="RPG & Narrative" description="Stats, stories, and worlds.">
-     <QuestionGroup 
-       label="Setting Style" 
-       required 
-       error={errors.rpgSetting} 
-       tooltip="Influences the dialogue style and names generated for items/places."
-     >
-        <Select options={[
-          'High Fantasy', 'Cyberpunk / Sci-Fi', 'Post-Apocalyptic', 'Modern Mystery', 
-          'Eldritch Horror', 'School / Slice of Life'
-        ]} value={data.rpgSetting} onChange={(e) => update({ rpgSetting: e.target.value })} />
+     <QuestionGroup label="Setting Style" required error={errors.rpgSetting} tooltip="Influences the dialogue style and names generated for items/places.">
+        <Select options={['High Fantasy', 'Cyberpunk / Sci-Fi', 'Post-Apocalyptic', 'Modern Mystery', 'Eldritch Horror', 'School / Slice of Life']} value={data.rpgSetting} onChange={(e) => update({ rpgSetting: e.target.value })} />
      </QuestionGroup>
-     <QuestionGroup 
-       label="Combat System" 
-       required 
-       error={errors.rpgCombat} 
-       tooltip="Turn-based requires state-switching code. Real-time requires hitbox detection and reactive AI."
-     >
-        <Select options={[
-          'Turn-Based (Menu)', 'Real-Time Action', 'Tactical Grid', 'Auto-Battler', 
-          'No Combat (Story/Visual Novel)'
-        ]} value={data.rpgCombat} onChange={(e) => update({ rpgCombat: e.target.value })} />
+     <QuestionGroup label="Combat System" required error={errors.rpgCombat} tooltip="Turn-based requires state-switching code. Real-time requires hitbox detection.">
+        <Select options={['Turn-Based (Menu)', 'Real-Time Action', 'Tactical Grid', 'Auto-Battler', 'No Combat (Story/Visual Novel)']} value={data.rpgCombat} onChange={(e) => update({ rpgCombat: e.target.value })} />
      </QuestionGroup>
-     <QuestionGroup 
-       label="Class / Progression" 
-       required 
-       error={errors.rpgClassSystem} 
-       tooltip="Determines the player's data structure (Stats like HP, MP, XP)."
-     >
-        <Select options={[
-          'Class-based (Warrior/Mage)', 'Skill Tree', 'Loot based (Gear is power)', 
-          'Simple Leveling', 'Relationship Levels (VN)'
-        ]} value={data.rpgClassSystem} onChange={(e) => update({ rpgClassSystem: e.target.value })} />
+     <QuestionGroup label="Class / Progression" required error={errors.rpgClassSystem} tooltip="Determines the player's data structure (Stats like HP, MP, XP).">
+        <Select options={['Class-based (Warrior/Mage)', 'Skill Tree', 'Loot based (Gear is power)', 'Simple Leveling', 'Relationship Levels (VN)']} value={data.rpgClassSystem} onChange={(e) => update({ rpgClassSystem: e.target.value })} />
      </QuestionGroup>
   </SectionWrapper>
 );
 
-// 4. Strategy Details
 export const StepStrategyDetails: React.FC<StepProps> = ({ data, update, errors }) => (
   <SectionWrapper title="Simulation & Strategy" description="Management and growth.">
-     <QuestionGroup 
-       label="Sim Type" 
-       required 
-       error={errors.simType} 
-       tooltip="Tycoons focus on profit; Tower Defense focuses on placement and defensive AI; Idle games focus on exponential growth math."
-     >
-        <Select options={[
-          'Tycoon / Business', 'City Builder', 'Farming / Life Sim', 'Tower Defense', 
-          'Idle / Clicker', 'God Game', 'RTS (Real Time Strategy)', 'Biology / Evolution Sim', 'Physics Sandbox'
-        ]} value={data.simType} onChange={(e) => update({ simType: e.target.value })} />
+     <QuestionGroup label="Sim Type" required error={errors.simType} tooltip="Tycoons focus on profit; Tower Defense focuses on placement; Idle games focus on exponential growth math.">
+        <Select options={['Tycoon / Business', 'City Builder', 'Farming / Life Sim', 'Tower Defense', 'Idle / Clicker', 'God Game', 'RTS (Real Time Strategy)', 'Biology / Evolution Sim', 'Physics Sandbox']} value={data.simType} onChange={(e) => update({ simType: e.target.value })} />
      </QuestionGroup>
-     <QuestionGroup 
-       label="Primary Resource" 
-       required 
-       helpText="What do players collect? e.g. Gold, Energy, Happiness." 
-       error={errors.simGoal} 
-       tooltip="The main 'Number' that the player wants to increase. It drives the economy code."
-     >
+     <QuestionGroup label="Primary Resource" required helpText="What do players collect? e.g. Gold, Energy, Happiness." error={errors.simGoal} tooltip="The main 'Number' that the player wants to increase.">
         <TextInput value={data.simGoal} onChange={(e) => update({ simGoal: e.target.value })} placeholder="Resource name..." />
      </QuestionGroup>
-     <QuestionGroup 
-       label="Economy Complexity" 
-       required 
-       error={errors.simEconomy} 
-       tooltip="Simple economies use direct addition. Market economies require value fluctuation logic and supply/demand systems."
-     >
+     <QuestionGroup label="Economy Complexity" required error={errors.simEconomy} tooltip="Simple economies use direct addition. Market economies require value fluctuation logic.">
         <Select options={['Simple (Number goes up)', 'Resource Chains (Wood -> Plank -> House)', 'Market Driven (Supply/Demand)']} value={data.simEconomy} onChange={(e) => update({ simEconomy: e.target.value })} />
      </QuestionGroup>
   </SectionWrapper>
 );
 
-// 5. Creative Details
 export const StepCreativeDetails: React.FC<StepProps> = ({ data, update, errors }) => (
   <SectionWrapper title="Creative Tool" description="Empower the user to make art.">
-     <QuestionGroup 
-       label="Tool Type" 
-       required 
-       error={errors.creativeToolType} 
-       tooltip="Generates specific canvas interaction tools (e.g., 'Brush' for Pixel art, 'Nodes' for Music)."
-     >
+     <QuestionGroup label="Tool Type" required error={errors.creativeToolType} tooltip="Generates specific canvas interaction tools (e.g., 'Brush' for Pixel art).">
         <Select options={['Pixel Art Editor', 'Vector / Shape Designer', 'Music / Sequencer', 'Generative Art', 'Text / Poetry Maker']} value={data.creativeToolType} onChange={(e) => update({ creativeToolType: e.target.value })} />
      </QuestionGroup>
-     <QuestionGroup 
-       label="Output / Share" 
-       required 
-       error={errors.creativeOutput} 
-       tooltip="Decides if the AI should implement image export code or playback features."
-     >
+     <QuestionGroup label="Output / Share" required error={errors.creativeOutput} tooltip="Decides if the AI should implement image export code or playback features.">
         <TextInput value={data.creativeOutput} onChange={(e) => update({ creativeOutput: e.target.value })} placeholder="e.g. Save as PNG, Playback loop..." />
      </QuestionGroup>
   </SectionWrapper>
 );
 
-// 6. App Details (Enhanced)
 export const StepAppDetails: React.FC<StepProps> = ({ data, update, errors }) => (
   <SectionWrapper title="App Specifications" description="Define the architecture and logic of your application utility.">
-     <QuestionGroup 
-       label="App Archetype" 
-       required 
-       error={errors.appType} 
-       tooltip="Drives the high-level layout. A 'Dashboard' will result in multi-column grids; a 'Feed' will follow a vertical scrolling pattern."
-     >
-        <Select options={[
-          'Calendar / Scheduler', 
-          'Email Client / Messaging', 
-          'File Manager / Asset Explorer', 
-          'Note Taking / Knowledge Base', 
-          'Dashboard / Data Analytics', 
-          'To-Do / Progress Tracker', 
-          'Social / Content Feed', 
-          'Calculator / Unit Converter', 
-          'Flashcards / Adaptive Learning'
-        ]} value={data.appType} onChange={(e) => update({ appType: e.target.value })} />
+     <QuestionGroup label="App Archetype" required error={errors.appType} tooltip="Drives the high-level layout. A 'Dashboard' results in grids; a 'Feed' follows vertical patterns.">
+        <Select options={['Calendar / Scheduler', 'Email Client / Messaging', 'File Manager / Asset Explorer', 'Note Taking / Knowledge Base', 'Dashboard / Data Analytics', 'To-Do / Progress Tracker', 'Social / Content Feed', 'Calculator / Unit Converter', 'Flashcards / Adaptive Learning']} value={data.appType} onChange={(e) => update({ appType: e.target.value })} />
      </QuestionGroup>
-     <QuestionGroup 
-       label="Data Model" 
-       required 
-       error={errors.appDataModel} 
-       tooltip="Specifies how user data is saved. 'Local Storage' is recommended for single-file projects to ensure progress is saved between sessions."
-     >
+     <QuestionGroup label="Data Model" required error={errors.appDataModel} tooltip="Local Storage persists on device. Session clears on refresh.">
         <Select options={['Local Storage (Persist on device)', 'Session only (Clears on refresh)', 'Mock API (Simulated Backend)']} value={data.appDataModel} onChange={(e) => update({ appDataModel: e.target.value })} />
      </QuestionGroup>
-     <QuestionGroup 
-       label="UI Density" 
-       required 
-       error={errors.appUiDensity} 
-       tooltip="Affects CSS spacing (padding/margins). 'Spacious' is good for mobile; 'Dense' is better for professional tools."
-     >
+     <QuestionGroup label="UI Density" required error={errors.appUiDensity} tooltip="Affects CSS spacing. 'Spacious' is good for mobile; 'Dense' is better for pro tools.">
         <Select options={['Comfortable / Spacious', 'Dense / Data Heavy', 'Minimalist']} value={data.appUiDensity} onChange={(e) => update({ appUiDensity: e.target.value })} />
      </QuestionGroup>
   </SectionWrapper>
 );
 
-// 7. Party Details (Existing but kept for Party type)
 export const StepPartyDetails: React.FC<StepProps> = ({ data, update, errors }) => {
     const updateMinigame = (index: number, field: keyof Minigame, val: string) => {
         const newMinigames = [...data.partyMinigames];
         newMinigames[index] = { ...newMinigames[index], [field]: val };
         update({ partyMinigames: newMinigames });
     };
-
     return (
         <SectionWrapper title="Party Mechanics" description="Chaos for the couch.">
-             <QuestionGroup 
-               label="Player Count" 
-               required 
-               error={errors.partyPlayers} 
-               tooltip="Sets the input listener count. More players require split-keyboard controls or Gamepad API implementation."
-             >
-                <SelectionGrid>
-                    {['2', '3', '4'].map(p => (
-                        <ChoiceCard key={p} label={`${p} Players`} selected={data.partyPlayers === p} onClick={() => update({ partyPlayers: p })} />
-                    ))}
-                </SelectionGrid>
+             <QuestionGroup label="Player Count" required error={errors.partyPlayers} tooltip="Sets input listener count. More players require split-keyboard or Gamepad API.">
+                <SelectionGrid>{['2', '3', '4'].map(p => (<ChoiceCard key={p} label={`${p} Players`} selected={data.partyPlayers === p} onClick={() => update({ partyPlayers: p })} />))}</SelectionGrid>
             </QuestionGroup>
-            <QuestionGroup 
-              label="Round Length" 
-              required 
-              error={errors.partyRoundLength} 
-              tooltip="Affects the pace of minigame transitions."
-            >
+            <QuestionGroup label="Round Length" required error={errors.partyRoundLength} tooltip="Affects the pace of minigame transitions.">
                 <Select options={['30s Blitz', '60s Standard', '90s Long']} value={data.partyRoundLength} onChange={(e) => update({ partyRoundLength: e.target.value })} />
             </QuestionGroup>
-            <QuestionGroup 
-              label="Match Format" 
-              required 
-              error={errors.partyMatchFormat} 
-              tooltip="Determines how the scoreboard tracks winners across multiple rounds."
-            >
+            <QuestionGroup label="Match Format" required error={errors.partyMatchFormat} tooltip="Determines how the scoreboard tracks winners.">
                 <Select options={['Best of 3', 'Best of 5', 'Mario Party Style (Board + Minigames)']} value={data.partyMatchFormat} onChange={(e) => update({ partyMatchFormat: e.target.value })} />
             </QuestionGroup>
-            <QuestionGroup 
-              label="Chaos Rule" 
-              required 
-              helpText="e.g. Controls swap every 10s" 
-              error={errors.partyChaosRule} 
-              tooltip="A special modifier that breaks the rules periodically. Great for 'Party' vibes!"
-            >
+            <QuestionGroup label="Chaos Rule" required helpText="e.g. Controls swap every 10s" error={errors.partyChaosRule} tooltip="A special modifier that breaks the rules periodically.">
                  <TextInput value={data.partyChaosRule} onChange={(e) => update({ partyChaosRule: e.target.value })} placeholder="Describe the chaos..." />
             </QuestionGroup>
-             <QuestionGroup 
-               label="Minigame Ideas" 
-               required 
-               helpText="List 3 concepts" 
-               tooltip="Provides thematic direction for the specific challenges."
-             >
-                 {data.partyMinigames.map((mg, idx) => (
-                    <div key={idx} className="mb-2">
-                        <TextInput 
-                            placeholder={`Minigame ${idx+1}: e.g. Tank Sumo`} 
-                            value={mg.name} 
-                            onChange={(e) => updateMinigame(idx, 'name', e.target.value)}
-                        />
-                    </div>
-                 ))}
+             <QuestionGroup label="Minigame Ideas" required helpText="List 3 concepts" tooltip="Provides thematic direction for challenges.">
+                 {data.partyMinigames.map((mg, idx) => (<div key={idx} className="mb-2"><TextInput placeholder={`Minigame ${idx+1}: e.g. Tank Sumo`} value={mg.name} onChange={(e) => updateMinigame(idx, 'name', e.target.value)} /></div>))}
             </QuestionGroup>
         </SectionWrapper>
     );
 };
-
-
-// --- Section 4: Multiplayer ---
-
-const MP_STYLES = [
-  { l: 'Couch Co-op', d: 'Same screen, working together.' },
-  { l: 'Versus (PvP)', d: 'Fighting against each other.' },
-  { l: 'Team-based', d: '2v2 or Team vs Environment.' },
-  { l: 'Leaderboards only', d: 'Async competition via scores.' }
-];
 
 export const StepMultiplayer: React.FC<StepProps> = ({ data, update, errors }) => {
-    const toggleStyle = (style: string) => {
-        const newStyles = data.mpStyle.includes(style) 
-            ? data.mpStyle.filter(s => s !== style) 
-            : [...data.mpStyle, style];
-        update({ mpStyle: newStyles });
-    };
-
+    const toggleStyle = (style: string) => { const newStyles = data.mpStyle.includes(style) ? data.mpStyle.filter(s => s !== style) : [...data.mpStyle, style]; update({ mpStyle: newStyles }); };
     return (
         <SectionWrapper title="Multiplayer & Controls" description="Input and Socials.">
-            <QuestionGroup 
-              label="Max Players" 
-              required 
-              error={errors.mpPlayerCount} 
-              tooltip="Impacts the initialization of entity arrays and input listeners."
-            >
-                 <SelectionGrid>
-                    {['1', '2', '3', '4'].map(p => (
-                        <ChoiceCard key={p} label={p} selected={data.mpPlayerCount === p} onClick={() => update({ mpPlayerCount: p })} />
-                    ))}
-                 </SelectionGrid>
+            <QuestionGroup label="Max Players" required error={errors.mpPlayerCount} tooltip="Impacts initialization of entity arrays and input listeners.">
+                 <SelectionGrid>{['1', '2', '3', '4'].map(p => (<ChoiceCard key={p} label={p} selected={data.mpPlayerCount === p} onClick={() => update({ mpPlayerCount: p })} />))}</SelectionGrid>
             </QuestionGroup>
-
-            <QuestionGroup 
-              label="Mode" 
-              error={errors.mpStyle} 
-              tooltip="Defines collision rules (e.g., players can pass through each other in Co-op, but block each other in Versus)."
-            >
-                <SelectionGrid>
-                    {MP_STYLES.map(s => (
-                        <ChoiceCard 
-                           key={s.l} 
-                           label={s.l} 
-                           description={s.d}
-                           type="checkbox" 
-                           selected={data.mpStyle.includes(s.l)} 
-                           onClick={() => toggleStyle(s.l)} 
-                        />
-                    ))}
-                </SelectionGrid>
+            <QuestionGroup label="Mode" error={errors.mpStyle} tooltip="Defines collision rules.">
+                <SelectionGrid>{[{ l: 'Couch Co-op', d: 'Same screen, working together.' }, { l: 'Versus (PvP)', d: 'Fighting against each other.' }, { l: 'Team-based', d: '2v2 or Team vs Environment.' }, { l: 'Leaderboards only', d: 'Async competition via scores.' }].map(s => (<ChoiceCard key={s.l} label={s.l} description={s.d} type="checkbox" selected={data.mpStyle.includes(s.l)} onClick={() => toggleStyle(s.l)} />))}</SelectionGrid>
             </QuestionGroup>
-
-            <QuestionGroup 
-              label="Control Scheme" 
-              required 
-              error={errors.mpControls} 
-              tooltip="Gamepad support requires specialized polling code. Mouse/Touch requires screen coordinate conversion logic."
-            >
-                 <Select 
-                    options={['Keyboard (WASD/Arrows)', 'Mouse / Touch', 'Gamepad Support', 'Hybrid (All)']} 
-                    value={data.mpControls} 
-                    onChange={(e) => update({ mpControls: e.target.value })} 
-                 />
+            <QuestionGroup label="Control Scheme" required error={errors.mpControls} tooltip="Gamepad support requires specialized polling code.">
+                 <Select options={['Keyboard (WASD/Arrows)', 'Mouse / Touch', 'Gamepad Support', 'Hybrid (All)']} value={data.mpControls} onChange={(e) => update({ mpControls: e.target.value })} />
             </QuestionGroup>
         </SectionWrapper>
     );
 };
 
-// --- Section 5: Progression ---
-
-const PROGRESSION_OPTS = [
-  { l: 'Levels/Stages', d: 'Linear progression from A to B.' },
-  { l: 'XP & Leveling', d: 'Stats increase over time.' },
-  { l: 'Unlockable Skins', d: 'Cosmetic rewards.' },
-  { l: 'High Score Chasing', d: 'Arcade style loops.' },
-  { l: 'Story Chapters', d: 'Narrative unlock.' },
-  { l: 'Currency Shop', d: 'Buy upgrades with gold.' }
-];
-
 export const StepProgression: React.FC<StepProps> = ({ data, update, errors }) => {
-     const toggleProg = (item: string) => {
-        const list = data.progressionFeatures.includes(item)
-            ? data.progressionFeatures.filter(i => i !== item)
-            : [...data.progressionFeatures, item];
-        update({ progressionFeatures: list });
-    };
-
+     const toggleProg = (item: string) => { const list = data.progressionFeatures.includes(item) ? data.progressionFeatures.filter(i => i !== item) : [...data.progressionFeatures, item]; update({ progressionFeatures: list }); };
     return (
         <SectionWrapper title="Progression System" description="Hooks to keep them playing.">
-            <QuestionGroup 
-              label="Features (Select at least 1)" 
-              required 
-              error={errors.progressionFeatures} 
-              tooltip="Generates the state management code for persistence. If you select 'XP', the AI will write a formula for level-up thresholds."
-            >
-                <SelectionGrid>
-                    {PROGRESSION_OPTS.map(opt => (
-                        <ChoiceCard 
-                            key={opt.l} 
-                            label={opt.l} 
-                            description={opt.d}
-                            type="checkbox" 
-                            selected={data.progressionFeatures.includes(opt.l)} 
-                            onClick={() => toggleProg(opt.l)} 
-                        />
-                    ))}
-                </SelectionGrid>
+            <QuestionGroup label="Features (Select at least 1)" required error={errors.progressionFeatures} tooltip="Generates state management for persistence.">
+                <SelectionGrid>{[{ l: 'Levels/Stages', d: 'Linear progression from A to B.' }, { l: 'XP & Leveling', d: 'Stats increase over time.' }, { l: 'Unlockable Skins', d: 'Cosmetic rewards.' }, { l: 'High Score Chasing', d: 'Arcade style loops.' }, { l: 'Story Chapters', d: 'Narrative unlock.' }, { l: 'Currency Shop', d: 'Buy upgrades with gold.' }].map(opt => (<ChoiceCard key={opt.l} label={opt.l} description={opt.d} type="checkbox" selected={data.progressionFeatures.includes(opt.l)} onClick={() => toggleProg(opt.l)} />))}</SelectionGrid>
             </QuestionGroup>
-
-            <QuestionGroup 
-              label="Persistence" 
-              required 
-              error={errors.saveProgress} 
-              tooltip="'Auto-Save' generates JSON serialization code. 'Roguelike' adds a 'game over' state that clears all session data."
-            >
+            <QuestionGroup label="Persistence" required error={errors.saveProgress} tooltip="'Auto-Save' generates JSON serialization.">
                 <SelectionGrid>
                     <ChoiceCard label="Auto-Save (Local Storage)" description="Remember progress after close." selected={data.saveProgress === 'Yes'} onClick={() => update({ saveProgress: 'Yes' })} />
                     <ChoiceCard label="Roguelike (Wipe on Death)" description="Fresh start every run." selected={data.saveProgress === 'No'} onClick={() => update({ saveProgress: 'No' })} />
@@ -979,121 +637,30 @@ export const StepProgression: React.FC<StepProps> = ({ data, update, errors }) =
     );
 };
 
-// --- Section 6: Content Limits ---
-
-const ALLOWED_VIBES = ['Tense', 'Spooky (no gore)', 'Action (cartoony)', 'Comedy', 'Competitive'];
-const NOT_ALLOWED = ['Gore', 'Graphic violence', 'Extreme jump scares', 'Realistic horror'];
-
 export const StepContentLimits: React.FC<StepProps> = ({ data, update, errors }) => {
-     const toggleAllow = (item: string) => {
-        const list = data.allowedVibes.includes(item)
-            ? data.allowedVibes.filter(i => i !== item)
-            : [...data.allowedVibes, item];
-        update({ allowedVibes: list });
-    };
-     const toggleDisallow = (item: string) => {
-        const list = data.notAllowed.includes(item)
-            ? data.notAllowed.filter(i => i !== item)
-            : [...(data.notAllowed || []), item];
-        update({ notAllowed: list });
-    };
-
+     const toggleAllow = (item: string) => { const list = data.allowedVibes.includes(item) ? data.allowedVibes.filter(i => i !== item) : [...data.allowedVibes, item]; update({ allowedVibes: list }); };
+     const toggleDisallow = (item: string) => { const list = data.notAllowed.includes(item) ? data.notAllowed.filter(i => i !== item) : [...(data.notAllowed || []), item]; update({ notAllowed: list }); };
     return (
         <SectionWrapper title="Safety & Boundaries" description="Define the tone constraints.">
-            <QuestionGroup 
-              label="Allowed Tone" 
-              required 
-              error={errors.allowedVibes} 
-              tooltip="Safety filter instructions for the AI's content generator."
-            >
-                 <SelectionGrid>
-                    {ALLOWED_VIBES.map(opt => (
-                        <ChoiceCard key={opt} label={opt} type="checkbox" selected={data.allowedVibes.includes(opt)} onClick={() => toggleAllow(opt)} />
-                    ))}
-                </SelectionGrid>
+            <QuestionGroup label="Allowed Tone" required error={errors.allowedVibes} tooltip="Safety filter instructions for content generation.">
+                 <SelectionGrid>{['Tense', 'Spooky (no gore)', 'Action (cartoony)', 'Comedy', 'Competitive'].map(opt => (<ChoiceCard key={opt} label={opt} type="checkbox" selected={data.allowedVibes.includes(opt)} onClick={() => toggleAllow(opt)} />))}</SelectionGrid>
             </QuestionGroup>
-
-            <QuestionGroup 
-              label="Strictly Forbidden" 
-              required 
-              error={errors.notAllowed} 
-              tooltip="Hard constraints. The AI will avoid generating any logic or text related to these topics."
-            >
-                 <SelectionGrid>
-                    {NOT_ALLOWED.map(opt => (
-                        <ChoiceCard key={opt} label={opt} type="checkbox" selected={data.notAllowed.includes(opt)} onClick={() => toggleDisallow(opt)} />
-                    ))}
-                </SelectionGrid>
-                <div className="mt-4">
-                     <TextInput placeholder="Other restrictions..." value={data.notAllowedOther} onChange={(e) => update({ notAllowedOther: e.target.value })} />
-                </div>
+            <QuestionGroup label="Strictly Forbidden" required error={errors.notAllowed} tooltip="Hard constraints for AI content filtering.">
+                 <SelectionGrid>{['Gore', 'Graphic violence', 'Extreme jump scares', 'Realistic horror'].map(opt => (<ChoiceCard key={opt} label={opt} type="checkbox" selected={data.notAllowed.includes(opt)} onClick={() => toggleDisallow(opt)} />))}</SelectionGrid>
+                <div className="mt-4"><TextInput placeholder="Other restrictions..." value={data.notAllowedOther} onChange={(e) => update({ notAllowedOther: e.target.value })} /></div>
             </QuestionGroup>
         </SectionWrapper>
     );
 };
 
-// --- Section 7: Finish ---
-
-const ACCESSIBILITY_OPTS = [
-    { l: 'Colorblind Friendly', d: 'High contrast, distinct patterns.' },
-    { l: 'Reduced Motion', d: 'Disable screen shake/flashing.' },
-    { l: 'Screen Reader Support', d: 'ARIA labels for UI elements.' },
-    { l: 'One-Handed Mode', d: 'Controls accessible with one hand.' },
-    { l: 'Game Speed Control', d: 'Slow down for easier reaction.' }
-];
-
 export const StepFinish: React.FC<StepProps> = ({ data, update }) => {
-    
-    const toggleAccess = (item: string) => {
-        const list = data.accessibilityFeatures?.includes(item) 
-             ? data.accessibilityFeatures.filter(i => i !== item)
-             : [...(data.accessibilityFeatures || []), item];
-        update({ accessibilityFeatures: list });
-    }
-
-    const showAccessibility = data.speedMode === SpeedMode.Full || 
-                             (data.speedMode === SpeedMode.Custom && data.customSections?.includes('accessibility'));
-
+    const toggleAccess = (item: string) => { const list = data.accessibilityFeatures?.includes(item) ? data.accessibilityFeatures.filter(i => i !== item) : [...(data.accessibilityFeatures || []), item]; update({ accessibilityFeatures: list }); }
+    const showAccessibility = data.speedMode === SpeedMode.Full || (data.speedMode === SpeedMode.Custom && data.customSections?.includes('accessibility'));
     return (
         <SectionWrapper title="Review" description="Final touches.">
-            {showAccessibility && (
-              <div className="animate-fade-in">
-                <QuestionGroup 
-                  label="Accessibility Features" 
-                  tooltip="Best-practice features that make your game playable for everyone. These are added as high-priority constraints in the prompt."
-                >
-                    <SelectionGrid>
-                        {ACCESSIBILITY_OPTS.map(opt => (
-                            <ChoiceCard 
-                                key={opt.l} 
-                                label={opt.l} 
-                                description={opt.d}
-                                type="checkbox" 
-                                selected={data.accessibilityFeatures?.includes(opt.l)} 
-                                onClick={() => toggleAccess(opt.l)} 
-                            />
-                        ))}
-                    </SelectionGrid>
-                </QuestionGroup>
-              </div>
-            )}
-
-            <QuestionGroup 
-              label="Extra Requirements" 
-              helpText="Ranked mode, achievements, specific libraries?" 
-              tooltip="Any specialized code requirements. For example: 'Must use Tailwind CSS utility classes exclusively' or 'Include a Konami code cheat'."
-            >
-                <TextArea 
-                    placeholder="List any other requirements..." 
-                    value={data.extras} 
-                    onChange={(e) => update({ extras: e.target.value })} 
-                />
-            </QuestionGroup>
-            
-            <div className="bg-gradient-to-r from-indigo-500 to-purple-600 p-8 rounded-2xl shadow-lg text-center text-white mt-8">
-                <h3 className="text-2xl font-bold mb-2">Ready to Generate</h3>
-                <p className="opacity-90">We will compile a professional-grade prompt for Gemini 3 Pro.</p>
-            </div>
+            {showAccessibility && (<div className="animate-fade-in"><QuestionGroup label="Accessibility Features" tooltip="Best-practice features for inclusive design."><SelectionGrid>{[{ l: 'Colorblind Friendly', d: 'High contrast, distinct patterns.' }, { l: 'Reduced Motion', d: 'Disable screen shake/flashing.' }, { l: 'Screen Reader Support', d: 'ARIA labels for UI elements.' }, { l: 'One-Handed Mode', d: 'Controls accessible with one hand.' }, { l: 'Game Speed Control', d: 'Slow down for easier reaction.' }].map(opt => (<ChoiceCard key={opt.l} label={opt.l} description={opt.d} type="checkbox" selected={data.accessibilityFeatures?.includes(opt.l)} onClick={() => toggleAccess(opt.l)} />))}</SelectionGrid></QuestionGroup></div>)}
+            <QuestionGroup label="Extra Requirements" helpText="Ranked mode, achievements, specific libraries?" tooltip="Any specialized code requirements."><TextArea placeholder="List any other requirements..." value={data.extras} onChange={(e) => update({ extras: e.target.value })} /></QuestionGroup>
+            <div className="bg-gradient-to-r from-indigo-500 to-purple-600 p-8 rounded-2xl shadow-lg text-center text-white mt-8"><h3 className="text-2xl font-bold mb-2">Ready to Generate</h3><p className="opacity-90">We will compile a professional-grade prompt for Gemini 3 Pro.</p></div>
         </SectionWrapper>
     );
 };

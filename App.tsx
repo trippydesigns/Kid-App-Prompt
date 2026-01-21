@@ -23,15 +23,17 @@ import {
   StepId, 
   FormData, 
   INITIAL_DATA,
-  RenderStyle
+  RenderStyle,
+  AssetStyle
 } from './types';
-import { ArrowRight, ArrowLeft, Clipboard, CheckCircle, Sparkles, RefreshCcw, Download, FileText, ExternalLink, Moon, Sun } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Clipboard, CheckCircle, Sparkles, RefreshCcw, Download, FileText, ExternalLink, Moon, Sun, Rocket, Copy, Check } from 'lucide-react';
 
 const App: React.FC = () => {
   const [data, setData] = useState<FormData>(INITIAL_DATA);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [generatedPrompt, setGeneratedPrompt] = useState<string | null>(null);
+  const [copySuccess, setCopySuccess] = useState(false);
   
   // Dark Mode State
   const [darkMode, setDarkMode] = useState(() => {
@@ -82,13 +84,19 @@ const App: React.FC = () => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    // Sanitize filename
     const safeTitle = (data.title || 'game_blueprint').replace(/[^a-z0-9]/gi, '_').toLowerCase();
     link.download = `${safeTitle}.md`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+  };
+
+  const handleCopy = () => {
+    if (!generatedPrompt) return;
+    navigator.clipboard.writeText(generatedPrompt);
+    setCopySuccess(true);
+    setTimeout(() => setCopySuccess(false), 2000);
   };
 
   // --- Dynamic Flow Logic ---
@@ -104,7 +112,6 @@ const App: React.FC = () => {
     const hasType = (t: ProjectType) => types.includes(t);
     const hasAnyType = (list: ProjectType[]) => list.some(t => hasType(t));
 
-    // Hybrid Genre Logic: Add all relevant steps based on selection
     if (hasAnyType([ProjectType.Action, ProjectType.Music, ProjectType.Survival, ProjectType.Fighting])) {
         flow.push(StepId.ActionDetails);
     }
@@ -121,16 +128,12 @@ const App: React.FC = () => {
     if (hasType(ProjectType.Party)) flow.push(StepId.PartyDetails);
     if (hasType(ProjectType.Creative)) flow.push(StepId.CreativeDetails);
     
-    // Group all specialized apps into the AppDetails step
     if (hasAnyType([ProjectType.App, ProjectType.Calendar, ProjectType.Email, ProjectType.FileManager, ProjectType.NoteTaking])) {
         flow.push(StepId.AppDetails);
     }
     
-    // Module Checks
     const isFull = data.speedMode === SpeedMode.Full;
     const isCustom = data.speedMode === SpeedMode.Custom;
-    
-    // Helper to check if a custom section is selected
     const hasSection = (id: string) => isFull || (isCustom && data.customSections.includes(id));
 
     if (hasSection('multiplayer')) flow.push(StepId.Multiplayer);
@@ -144,7 +147,6 @@ const App: React.FC = () => {
   const currentStepId = steps[currentStepIndex];
   const progressPercent = Math.round(((currentStepIndex + 1) / steps.length) * 100);
 
-  // --- Actions ---
   const updateData = (fields: Partial<FormData>) => {
     setData((prev) => ({ ...prev, ...fields }));
     const newErrors = { ...errors };
@@ -186,8 +188,6 @@ const App: React.FC = () => {
         requireField('assetStyle', 'Required');
         requireField('colorTheme', 'Required');
         break;
-      
-      // Genre Validations
       case StepId.ActionDetails:
         requireField('actionGenre', 'Required');
         requireField('actionView', 'Required');
@@ -220,7 +220,6 @@ const App: React.FC = () => {
            isValid = false;
         }
         break;
-
       case StepId.Multiplayer:
         requireField('mpPlayerCount', 'Required');
         requireField('mpControls', 'Required');
@@ -262,11 +261,60 @@ const App: React.FC = () => {
     const isCustom = data.speedMode === SpeedMode.Custom;
     const hasSection = (id: string) => isFull || (isCustom && data.customSections.includes(id));
     
-    // Construct Genre Specific Sections
     let allGenreDetails = '';
     const types = data.projectType;
     const hasType = (t: ProjectType) => types.includes(t);
     const hasAnyType = (list: ProjectType[]) => list.some(t => hasType(t));
+
+    const getLibraryRecs = () => {
+      let recs: string[] = [];
+      if (data.renderStyle === RenderStyle.ThreeJS) recs.push('Three.js', 'React Three Fiber', 'Cannon.js (Physics)');
+      else if (data.renderStyle === RenderStyle.Canvas) recs.push('Phaser 3', 'HTML5 Canvas API', 'Howler.js (Audio)');
+      else if (data.renderStyle === RenderStyle.DOM) recs.push('React', 'Tailwind CSS', 'Framer Motion');
+      else if (data.renderStyle === RenderStyle.SVG) recs.push('Lucide React', 'Rough.js (for sketchy style)');
+      
+      if (data.assetStyle === AssetStyle.Icons) recs.push('Lucide React');
+      if (data.includeSound) recs.push('Web Audio API', 'Tone.js');
+      return recs.join(', ');
+    };
+
+    const getMermaidDiagram = () => {
+      if (hasAnyType([ProjectType.App, ProjectType.Calendar, ProjectType.Email, ProjectType.NoteTaking])) {
+        return `graph TD
+  User((User)) --> View[React Views]
+  View --> Controller[Action Handlers]
+  Controller --> Store[State Management / Storage]
+  Store --> View
+  Store -.-> LocalStorage[(Local Storage)]`;
+      }
+      return `graph TD
+  InputLayer[User Input Handlers] --> GameLoop{Core Game Loop}
+  GameLoop --> UpdateSystem[Logic / Physics System]
+  UpdateSystem --> State[Global Game State]
+  State --> RenderSystem[Rendering Engine / Layer]
+  RenderSystem --> View[Canvas/DOM Display]
+  GameLoop -.-> RenderSystem`;
+    };
+
+    const getPseudocodeSnippet = () => {
+      const mainInterest = data.authorInterests[0] || 'Player';
+      if (hasAnyType([ProjectType.Action, ProjectType.Survival, ProjectType.Fighting])) {
+        return `function gameLoop(timestamp) {
+  const dt = timestamp - lastTime;
+  handleInputs();
+  update${mainInterest}Physics(dt);
+  checkCollisions();
+  renderFrame();
+  requestAnimationFrame(gameLoop);
+}`;
+      }
+      return `const useProjectStore = () => {
+  const [data, setData] = useState(initialState);
+  const addEntity = (item) => setData(prev => [...prev, item]);
+  const syncToStorage = () => localStorage.set('data', JSON.stringify(data));
+  return { data, addEntity, syncToStorage };
+};`;
+    };
 
     if (hasAnyType([ProjectType.Action, ProjectType.Music, ProjectType.Survival, ProjectType.Fighting])) {
         allGenreDetails += `
@@ -301,7 +349,6 @@ const App: React.FC = () => {
         `;
     }
     
-    // App Specs (including specialized sub-types)
     if (hasAnyType([ProjectType.App, ProjectType.Calendar, ProjectType.Email, ProjectType.FileManager, ProjectType.NoteTaking])) {
         allGenreDetails += `
 ### APP SPECS
@@ -356,6 +403,20 @@ const App: React.FC = () => {
 
 ${allGenreDetails}
 
+## DEEP TECHNICAL SPECIFICATION
+- **Recommended Libraries:** ${getLibraryRecs()}
+- **Architectural Pattern:** ${hasAnyType([ProjectType.App, ProjectType.NoteTaking]) ? 'Model-View-Controller / State-Observer' : 'Entity-Component System / Game Loop'}
+
+### SYSTEM DIAGRAM (Mermaid.js)
+\`\`\`mermaid
+${getMermaidDiagram()}
+\`\`\`
+
+### CORE LOGIC PSEUDOCODE
+\`\`\`javascript
+${getPseudocodeSnippet()}
+\`\`\`
+
 ## EXTENDED SYSTEMS
 ${hasSection('multiplayer') ? `- **Multiplayer:** ${data.mpPlayerCount} Players (${data.mpStyle.join(', ')})\n- **Input:** ${data.mpControls}` : ''}
 ${hasSection('progression') ? `- **Progression:** ${data.progressionFeatures.join(', ')}\n- **Persistence:** ${data.saveProgress}` : ''}
@@ -370,161 +431,212 @@ ${data.extras || 'Ensure code is clean, commented, and performant.'}
   };
 
   const renderStep = () => {
-    const props = { data, update: updateData, errors };
-    switch (currentStepId) {
-      case StepId.Start: return <StepStart {...props} />;
-      case StepId.AboutYou: return <StepAboutYou {...props} />;
-      case StepId.CoreIdentity: return <StepCoreIdentity {...props} />;
-      case StepId.Visuals: return <StepVisuals {...props} />;
-      
-      case StepId.ActionDetails: return <StepActionDetails {...props} />;
-      case StepId.PuzzleDetails: return <StepPuzzleDetails {...props} />;
-      case StepId.RPGDetails: return <StepRPGDetails {...props} />;
-      case StepId.StrategyDetails: return <StepStrategyDetails {...props} />;
-      case StepId.PartyDetails: return <StepPartyDetails {...props} />;
-      case StepId.CreativeDetails: return <StepCreativeDetails {...props} />;
-      case StepId.AppDetails: return <StepAppDetails {...props} />;
+    if (generatedPrompt) {
+      return (
+        <div className="space-y-12 animate-fade-in max-w-5xl mx-auto pb-32">
+          {/* Header & Success */}
+          <div className="text-center space-y-4">
+            <div className="inline-flex items-center justify-center p-4 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-full shadow-lg border-4 border-white dark:border-slate-900 animate-bounce">
+                <CheckCircle size={48} />
+            </div>
+            <h2 className="text-5xl font-black text-slate-900 dark:text-white tracking-tight">Blueprint Finalized</h2>
+            <p className="text-xl text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
+                Your technical brief is optimized for <strong>Gemini 3 Pro</strong>. Copy the code below and paste it into AI Studio to generate your project.
+            </p>
+          </div>
 
-      case StepId.Multiplayer: return <StepMultiplayer {...props} />;
-      case StepId.Progression: return <StepProgression {...props} />;
-      case StepId.ContentLimits: return <StepContentLimits {...props} />;
-      case StepId.Finish: return <StepFinish {...props} />;
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Left: How to use */}
+            <div className="lg:col-span-1 space-y-6">
+                <div className="bg-indigo-50 dark:bg-indigo-900/20 p-8 rounded-3xl border-2 border-indigo-100 dark:border-indigo-800 shadow-sm">
+                    <h3 className="text-xl font-bold text-indigo-900 dark:text-indigo-200 mb-6 flex items-center gap-2">
+                        <Rocket size={20} /> Next Steps
+                    </h3>
+                    <ol className="space-y-6">
+                        <li className="flex gap-4">
+                            <span className="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-sm">1</span>
+                            <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed">
+                                Click the <strong>Copy Prompt</strong> button on the right to grab your brief.
+                            </p>
+                        </li>
+                        <li className="flex gap-4">
+                            <span className="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-sm">2</span>
+                            <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed">
+                                Open <strong>Google AI Studio</strong> via the link below.
+                            </p>
+                        </li>
+                        <li className="flex gap-4">
+                            <span className="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-sm">3</span>
+                            <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed">
+                                Paste the prompt into a <strong>New Chat</strong> and let Gemini build your masterpiece!
+                            </p>
+                        </li>
+                    </ol>
+                    <a 
+                        href="https://aistudio.google.com/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-8 flex items-center justify-center gap-3 w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-500/20 hover:scale-[1.02] active:scale-[0.98]"
+                    >
+                        Go to AI Studio <ExternalLink size={20} />
+                    </a>
+                </div>
+
+                <button 
+                    onClick={() => {
+                        setGeneratedPrompt(null);
+                        setCurrentStepIndex(0);
+                        setData(INITIAL_DATA);
+                    }}
+                    className="flex items-center justify-center gap-2 w-full py-4 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-2xl font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-all border-2 border-transparent"
+                >
+                    <RefreshCcw size={20} /> Build Another Brief
+                </button>
+            </div>
+
+            {/* Right: The Prompt */}
+            <div className="lg:col-span-2">
+                <div className="bg-white dark:bg-slate-900 rounded-3xl border-2 border-slate-100 dark:border-slate-800 shadow-2xl overflow-hidden h-full flex flex-col">
+                    <div className="bg-slate-900 dark:bg-slate-800 px-8 py-5 flex justify-between items-center text-white border-b border-slate-800 dark:border-slate-700">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 bg-indigo-500/20 rounded-lg text-indigo-400">
+                                <FileText size={18} />
+                            </div>
+                            <span className="font-bold tracking-tight">Technical Brief Markdown</span>
+                        </div>
+                        <div className="flex gap-3">
+                            <button 
+                                onClick={handleDownload}
+                                className="p-2.5 hover:bg-slate-700 rounded-xl transition-colors flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-slate-300 hover:text-white"
+                                title="Download Markdown"
+                            >
+                                <Download size={18} />
+                            </button>
+                            <button 
+                                onClick={handleCopy}
+                                className={`
+                                    flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-bold transition-all
+                                    ${copySuccess 
+                                        ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' 
+                                        : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/20'}
+                                `}
+                            >
+                                {copySuccess ? <Check size={18} /> : <Copy size={18} />}
+                                {copySuccess ? 'Copied!' : 'Copy Prompt'}
+                            </button>
+                        </div>
+                    </div>
+                    <div className="flex-1 p-8 overflow-hidden bg-slate-50 dark:bg-slate-950/50">
+                        <div className="h-full rounded-2xl border-2 border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col">
+                            <pre className="flex-1 p-8 whitespace-pre-wrap font-mono text-sm text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-900 leading-relaxed overflow-y-auto custom-scrollbar">
+                                {generatedPrompt}
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    const stepProps = { data, update: updateData, errors };
+
+    switch (currentStepId) {
+      case StepId.Start: return <StepStart {...stepProps} />;
+      case StepId.AboutYou: return <StepAboutYou {...stepProps} />;
+      case StepId.CoreIdentity: return <StepCoreIdentity {...stepProps} />;
+      case StepId.Visuals: return <StepVisuals {...stepProps} />;
+      case StepId.ActionDetails: return <StepActionDetails {...stepProps} />;
+      case StepId.PuzzleDetails: return <StepPuzzleDetails {...stepProps} />;
+      case StepId.RPGDetails: return <StepRPGDetails {...stepProps} />;
+      case StepId.StrategyDetails: return <StepStrategyDetails {...stepProps} />;
+      case StepId.PartyDetails: return <StepPartyDetails {...stepProps} />;
+      case StepId.CreativeDetails: return <StepCreativeDetails {...stepProps} />;
+      case StepId.AppDetails: return <StepAppDetails {...stepProps} />;
+      case StepId.Multiplayer: return <StepMultiplayer {...stepProps} />;
+      case StepId.Progression: return <StepProgression {...stepProps} />;
+      case StepId.ContentLimits: return <StepContentLimits {...stepProps} />;
+      case StepId.Finish: return <StepFinish {...stepProps} />;
       default: return null;
     }
   };
 
-  if (generatedPrompt) {
-    return (
-      <div className="min-h-screen bg-slate-900 text-white flex items-center justify-center p-4">
-        <div className="max-w-4xl w-full bg-slate-800 rounded-2xl p-8 shadow-2xl border border-slate-700 animate-fade-in flex flex-col h-[90vh]">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-4">
-                <div className="bg-emerald-500 p-3 rounded-xl text-slate-900 shadow-lg shadow-emerald-500/20">
-                    <CheckCircle size={32} />
-                </div>
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Blueprint Ready</h1>
-                    <p className="text-slate-400">Optimized for Gemini 3 Pro</p>
-                </div>
-            </div>
-            <button 
-                onClick={() => {
-                   setGeneratedPrompt(null);
-                   setCurrentStepIndex(0);
-                   setData(INITIAL_DATA);
-                }}
-                className="text-slate-400 hover:text-white flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-slate-700 transition-colors"
-            >
-                <RefreshCcw size={16}/> New Project
-            </button>
-          </div>
-          
-          <div className="flex-1 bg-slate-950 p-6 rounded-xl border border-slate-700 font-mono text-sm leading-relaxed overflow-y-auto whitespace-pre-wrap text-emerald-50 shadow-inner">
-            {generatedPrompt}
-          </div>
-
-          <div className="mt-6 flex flex-col md:flex-row gap-4">
-            <button 
-                onClick={() => {
-                    navigator.clipboard.writeText(generatedPrompt);
-                    alert("Copied to clipboard!");
-                }}
-                className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-indigo-500/25 active:scale-[0.99]"
-            >
-                <Clipboard /> Copy Blueprint
-            </button>
-            
-            <button
-                onClick={handleDownload}
-                className="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg active:scale-[0.99]"
-            >
-                <FileText /> Download File
-            </button>
-
-            <a
-                href="https://aistudio.google.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg active:scale-[0.99] shadow-blue-500/25"
-            >
-                <ExternalLink /> Open AI Studio
-            </a>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen flex flex-col max-w-3xl mx-auto bg-white dark:bg-slate-900 shadow-2xl min-[800px]:my-8 min-[800px]:rounded-3xl overflow-hidden border border-slate-100 dark:border-slate-800 ring-1 ring-slate-900/5 dark:ring-white/10 transition-colors duration-300">
+    <div className="min-h-screen flex flex-col max-w-7xl mx-auto bg-white dark:bg-slate-900 shadow-2xl min-[800px]:my-8 min-[800px]:rounded-[2.5rem] overflow-hidden border border-slate-100 dark:border-slate-800 ring-1 ring-slate-900/5 dark:ring-white/10 transition-colors duration-300">
       
       {/* Header */}
-      <div className="sticky top-0 z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-8 py-5 transition-colors duration-300">
-        <div className="flex justify-between items-center mb-3">
-            <h1 className="text-xl font-bold text-slate-800 dark:text-slate-100 flex items-center gap-3">
-                <div className="bg-indigo-100 dark:bg-indigo-900/30 p-2 rounded-lg text-indigo-600 dark:text-indigo-400">
-                    <Sparkles size={20} />
+      <div className="sticky top-0 z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-10 py-6 transition-colors duration-300">
+        <div className="flex justify-between items-center mb-4">
+            <h1 className="text-2xl font-black text-slate-800 dark:text-slate-100 flex items-center gap-3 tracking-tight">
+                <div className="bg-indigo-600 dark:bg-indigo-500 p-2.5 rounded-2xl text-white shadow-lg shadow-indigo-500/20">
+                    <Sparkles size={24} />
                 </div>
-                Game Builder Brief
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-indigo-600 dark:from-white dark:to-indigo-400">
+                    Game Builder Brief
+                </span>
             </h1>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
                <button
                   onClick={() => setDarkMode(!darkMode)}
-                  className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                  className="p-3 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all border border-transparent hover:border-slate-200 dark:hover:border-slate-700"
                   aria-label="Toggle Dark Mode"
                >
-                  {darkMode ? <Sun size={18} /> : <Moon size={18} />}
+                  {darkMode ? <Sun size={20} /> : <Moon size={20} />}
                </button>
                {deferredPrompt && (
                    <button 
                     onClick={handleInstallClick}
-                    className="flex items-center gap-2 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 px-4 py-2 rounded-lg text-sm font-bold hover:bg-slate-700 dark:hover:bg-slate-200 transition-colors animate-pulse"
+                    className="flex items-center gap-2 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 px-6 py-3 rounded-2xl text-sm font-black hover:bg-slate-700 dark:hover:bg-slate-200 transition-all shadow-xl shadow-slate-900/10"
                    >
-                     <Download size={16}/> Install App
+                     <Download size={18}/> <span className="hidden sm:inline">Install App</span>
                    </button>
                )}
-               <span className="text-xs font-bold bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 px-3 py-1 rounded-full uppercase tracking-wider">
-                   Step {currentStepIndex + 1} of {steps.length}
+               <span className="text-xs font-black bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 px-4 py-1.5 rounded-full uppercase tracking-[0.1em] border border-indigo-100 dark:border-indigo-800">
+                   {generatedPrompt ? 'Blueprint Ready' : `Step ${currentStepIndex + 1} of ${steps.length}`}
                </span>
             </div>
         </div>
-        <div className="h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+        <div className="h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden shadow-inner">
             <div 
-                className="h-full bg-indigo-600 dark:bg-indigo-500 transition-all duration-500 ease-out rounded-full"
-                style={{ width: `${progressPercent}%` }}
+                className="h-full bg-gradient-to-r from-indigo-600 to-purple-600 transition-all duration-700 ease-out rounded-full shadow-[0_0_15px_rgba(79,70,229,0.5)]"
+                style={{ width: `${generatedPrompt ? 100 : progressPercent}%` }}
             />
         </div>
       </div>
 
       {/* Main Content */}
-      <main className="flex-1 px-8 py-8 overflow-y-auto bg-white dark:bg-slate-900 transition-colors duration-300">
+      <main className="flex-1 px-10 py-12 overflow-y-auto bg-white dark:bg-slate-900 transition-colors duration-300 custom-scrollbar">
         {renderStep()}
       </main>
 
       {/* Footer */}
-      <div className="sticky bottom-0 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 p-8 pt-4 flex justify-between items-center gap-4 transition-colors duration-300">
-        <button
-          onClick={handleBack}
-          disabled={currentStepIndex === 0}
-          className={`
-            px-6 py-4 rounded-xl font-bold transition-colors flex items-center gap-2
-            ${currentStepIndex === 0 
-                ? 'text-slate-300 dark:text-slate-700 cursor-not-allowed' 
-                : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'}
-          `}
-        >
-          <ArrowLeft size={20} />
-          Back
-        </button>
+      {!generatedPrompt && (
+        <div className="sticky bottom-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-100 dark:border-slate-800 px-10 py-6 flex justify-between items-center gap-6 transition-colors duration-300">
+          <button
+            onClick={handleBack}
+            disabled={currentStepIndex === 0}
+            className={`
+              px-8 py-4 rounded-2xl font-black transition-all flex items-center gap-3 border-2
+              ${currentStepIndex === 0 
+                  ? 'text-slate-300 dark:text-slate-700 border-slate-50 dark:border-slate-800 cursor-not-allowed' 
+                  : 'text-slate-600 dark:text-slate-300 border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'}
+            `}
+          >
+            <ArrowLeft size={22} />
+            Back
+          </button>
 
-        <button
-          onClick={handleNext}
-          className="flex-1 max-w-[240px] bg-slate-900 dark:bg-indigo-600 hover:bg-indigo-600 dark:hover:bg-indigo-500 text-white px-6 py-4 rounded-xl font-bold shadow-xl shadow-slate-200 dark:shadow-none hover:shadow-indigo-200 transition-all transform active:scale-[0.98] flex items-center justify-center gap-3"
-        >
-          {currentStepIndex === steps.length - 1 ? 'Generate' : 'Continue'}
-          {currentStepIndex !== steps.length - 1 && <ArrowRight size={20} />}
-        </button>
-      </div>
+          <button
+            onClick={handleNext}
+            className="flex-1 max-w-[280px] bg-slate-900 dark:bg-indigo-600 hover:bg-indigo-600 dark:hover:bg-indigo-500 text-white px-8 py-4 rounded-[1.25rem] font-black shadow-2xl shadow-indigo-600/10 dark:shadow-indigo-500/20 transition-all transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3"
+          >
+            {currentStepIndex === steps.length - 1 ? 'Generate Brief' : 'Next Step'}
+            <ArrowRight size={22} className={currentStepIndex === steps.length - 1 ? 'hidden' : 'block'} />
+            {currentStepIndex === steps.length - 1 && <Sparkles size={22} />}
+          </button>
+        </div>
+      )}
     </div>
   );
 };
