@@ -1,3 +1,4 @@
+
 export enum ProjectType {
   Action = 'Action / Arcade',
   Puzzle = 'Puzzle / Logic',
@@ -60,6 +61,7 @@ export interface FormData {
   assetStyle: string;
   colorTheme: string;
   includeSound: boolean;
+  audioStyle: string; // New: Specific style of audio
 
   // --- GENRE SPECIFIC FIELDS ---
 
@@ -119,6 +121,9 @@ export interface FormData {
   allowedVibes: string[];
   notAllowed: string[];
   notAllowedOther: string;
+  
+  // Accessibility (New)
+  accessibilityFeatures: string[];
 
   // Finish
   extras: string;
@@ -138,6 +143,7 @@ export const INITIAL_DATA: FormData = {
   assetStyle: '',
   colorTheme: ColorTheme.Default,
   includeSound: true,
+  audioStyle: 'Retro / 8-bit (Chiptune)',
 
   // Action
   actionGenre: '',
@@ -192,6 +198,7 @@ export const INITIAL_DATA: FormData = {
   allowedVibes: [],
   notAllowed: [],
   notAllowedOther: '',
+  accessibilityFeatures: [],
   extras: '',
 };
 

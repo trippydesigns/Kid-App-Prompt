@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo, useEffect } from 'react';
 import { 
   StepStart, 
@@ -23,7 +24,7 @@ import {
   INITIAL_DATA,
   RenderStyle
 } from './types';
-import { ArrowRight, ArrowLeft, Clipboard, CheckCircle, Sparkles, RefreshCcw, Download, FileText } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Clipboard, CheckCircle, Sparkles, RefreshCcw, Download, FileText, ExternalLink } from 'lucide-react';
 
 const App: React.FC = () => {
   const [data, setData] = useState<FormData>(INITIAL_DATA);
@@ -272,7 +273,7 @@ const App: React.FC = () => {
 ## TECHNICAL ARCHITECTURE
 - **Render Engine:** ${data.renderStyle}
 - **Asset Strategy:** ${data.assetStyle} (Self-contained, NO external URLs)
-- **Audio:** ${data.includeSound ? 'Procedural Web Audio / Synth' : 'None'}
+- **Audio:** ${data.includeSound ? `Procedural Web Audio (${data.audioStyle})` : 'None'}
 - **Deployment:** Single-file HTML/JS/CSS or Standard Vite React.
 
 ${genreDetails}
@@ -284,6 +285,7 @@ ${isFull ? `
 - **Progression:** ${data.progressionFeatures.join(', ')}
 - **Persistence:** ${data.saveProgress}
 - **Content Boundary:** Allow [${data.allowedVibes.join(', ')}], BAN [${data.notAllowed.join(', ')}]
+- **Accessibility:** ${data.accessibilityFeatures?.join(', ') || 'Standard'}
 ` : ''}
 
 ## SPECIAL INSTRUCTIONS
@@ -363,6 +365,15 @@ ${data.extras || 'Ensure code is clean, commented, and performant.'}
             >
                 <FileText /> Download File
             </button>
+
+            <a
+                href="https://aistudio.google.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg active:scale-[0.99] shadow-blue-500/25"
+            >
+                <ExternalLink /> Open AI Studio
+            </a>
           </div>
         </div>
       </div>
