@@ -1,0 +1,19 @@
+{
+  "name": "Game Builder Brief",
+  "short_name": "GameBrief",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4f46e5",
+  "description": "Offline-capable Game Design Wizard",
+  "categories": ["productivity", "development", "education"],
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2991/2991148.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

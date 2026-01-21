@@ -1,0 +1,5 @@
+{
+  "name": "Game Builder Brief",
+  "description": "An interactive wizard to spec out full-stack game/app prompts for Gemini 3 Pro, including technical architecture and asset strategies.",
+  "requestFramePermissions": []
+}
