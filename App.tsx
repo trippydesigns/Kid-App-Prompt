@@ -95,7 +95,7 @@ const App: React.FC = () => {
   const steps = useMemo(() => {
     const flow: StepId[] = [
       StepId.Start, 
-      StepId.AboutYou, // New Step
+      StepId.AboutYou, 
       StepId.CoreIdentity,
       StepId.Visuals 
     ];
@@ -105,14 +105,26 @@ const App: React.FC = () => {
     const hasAnyType = (list: ProjectType[]) => list.some(t => hasType(t));
 
     // Hybrid Genre Logic: Add all relevant steps based on selection
-    if (hasAnyType([ProjectType.Action, ProjectType.Music])) flow.push(StepId.ActionDetails);
-    if (hasAnyType([ProjectType.Puzzle, ProjectType.Educational])) flow.push(StepId.PuzzleDetails);
-    if (hasAnyType([ProjectType.RPG, ProjectType.VisualNovel])) flow.push(StepId.RPGDetails);
-    if (hasAnyType([ProjectType.Strategy, ProjectType.Simulation])) flow.push(StepId.StrategyDetails);
+    if (hasAnyType([ProjectType.Action, ProjectType.Music, ProjectType.Survival, ProjectType.Fighting])) {
+        flow.push(StepId.ActionDetails);
+    }
+    if (hasAnyType([ProjectType.Puzzle, ProjectType.Educational, ProjectType.Tabletop])) {
+        flow.push(StepId.PuzzleDetails);
+    }
+    if (hasAnyType([ProjectType.RPG, ProjectType.VisualNovel])) {
+        flow.push(StepId.RPGDetails);
+    }
+    if (hasAnyType([ProjectType.Strategy, ProjectType.Simulation, ProjectType.Sandbox, ProjectType.Idle])) {
+        flow.push(StepId.StrategyDetails);
+    }
     
     if (hasType(ProjectType.Party)) flow.push(StepId.PartyDetails);
     if (hasType(ProjectType.Creative)) flow.push(StepId.CreativeDetails);
-    if (hasType(ProjectType.App)) flow.push(StepId.AppDetails);
+    
+    // Group all specialized apps into the AppDetails step
+    if (hasAnyType([ProjectType.App, ProjectType.Calendar, ProjectType.Email, ProjectType.FileManager, ProjectType.NoteTaking])) {
+        flow.push(StepId.AppDetails);
+    }
     
     // Module Checks
     const isFull = data.speedMode === SpeedMode.Full;
@@ -202,7 +214,7 @@ const App: React.FC = () => {
         break;
       case StepId.PartyDetails:
         requireField('partyPlayers', 'Required');
-        const emptyMinigames = data.partyMinigames.some(m => !m.name); // Simpler check
+        const emptyMinigames = data.partyMinigames.some(m => !m.name); 
         if (emptyMinigames) {
            newErrors['partyMinigames'] = 'Please name your minigames.';
            isValid = false;
@@ -256,17 +268,17 @@ const App: React.FC = () => {
     const hasType = (t: ProjectType) => types.includes(t);
     const hasAnyType = (list: ProjectType[]) => list.some(t => hasType(t));
 
-    if (hasAnyType([ProjectType.Action, ProjectType.Music])) {
+    if (hasAnyType([ProjectType.Action, ProjectType.Music, ProjectType.Survival, ProjectType.Fighting])) {
         allGenreDetails += `
-### ACTION / RHYTHM SPECS
+### ACTION / RHYTHM / COMBAT SPECS
 - **Sub-Genre:** ${data.actionGenre}
 - **Perspective:** ${data.actionView}
 - **Mechanics:** ${data.actionMechanics?.join(', ')}
         `;
     }
-    if (hasAnyType([ProjectType.Puzzle, ProjectType.Educational])) {
+    if (hasAnyType([ProjectType.Puzzle, ProjectType.Educational, ProjectType.Tabletop])) {
         allGenreDetails += `
-### PUZZLE / LOGIC SPECS
+### PUZZLE / LOGIC / TABLETOP SPECS
 - **Type:** ${data.puzzleType}
 - **Core Mechanic:** ${data.puzzleMechanic}
 - **Level Generation:** ${data.puzzleLevelGen}
@@ -280,15 +292,17 @@ const App: React.FC = () => {
 - **Progression:** ${data.rpgClassSystem}
         `;
     }
-    if (hasAnyType([ProjectType.Strategy, ProjectType.Simulation])) {
+    if (hasAnyType([ProjectType.Strategy, ProjectType.Simulation, ProjectType.Sandbox, ProjectType.Idle])) {
         allGenreDetails += `
-### SIMULATION / STRATEGY SPECS
+### SIMULATION / STRATEGY / SANDBOX SPECS
 - **Type:** ${data.simType}
 - **Main Resource:** ${data.simGoal}
 - **Economy:** ${data.simEconomy}
         `;
     }
-    if (hasType(ProjectType.App)) {
+    
+    // App Specs (including specialized sub-types)
+    if (hasAnyType([ProjectType.App, ProjectType.Calendar, ProjectType.Email, ProjectType.FileManager, ProjectType.NoteTaking])) {
         allGenreDetails += `
 ### APP SPECS
 - **Archetype:** ${data.appType}
@@ -296,6 +310,7 @@ const App: React.FC = () => {
 - **UI Density:** ${data.appUiDensity}
         `;
     }
+    
     if (hasType(ProjectType.Party)) {
         allGenreDetails += `
 ### PARTY SPECS
