@@ -2,6 +2,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { 
   StepStart, 
+  StepAboutYou,
   StepCoreIdentity,
   StepVisuals,
   StepActionDetails,
@@ -24,7 +25,7 @@ import {
   INITIAL_DATA,
   RenderStyle
 } from './types';
-import { ArrowRight, ArrowLeft, Clipboard, CheckCircle, Sparkles, RefreshCcw, Download, FileText, ExternalLink } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Clipboard, CheckCircle, Sparkles, RefreshCcw, Download, FileText, ExternalLink, Moon, Sun } from 'lucide-react';
 
 const App: React.FC = () => {
   const [data, setData] = useState<FormData>(INITIAL_DATA);
@@ -32,6 +33,26 @@ const App: React.FC = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [generatedPrompt, setGeneratedPrompt] = useState<string | null>(null);
   
+  // Dark Mode State
+  const [darkMode, setDarkMode] = useState(() => {
+     if (typeof window !== 'undefined') {
+        return localStorage.getItem('theme') === 'dark' || 
+               (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+     }
+     return false;
+  });
+
+  // Dark Mode Effect
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  }, [darkMode]);
+
   // PWA Install Prompt State
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
 
@@ -74,32 +95,39 @@ const App: React.FC = () => {
   const steps = useMemo(() => {
     const flow: StepId[] = [
       StepId.Start, 
+      StepId.AboutYou, // New Step
       StepId.CoreIdentity,
       StepId.Visuals 
     ];
 
-    // Branching based on Type
-    switch (data.projectType) {
-      case ProjectType.Action: flow.push(StepId.ActionDetails); break;
-      case ProjectType.Puzzle: flow.push(StepId.PuzzleDetails); break;
-      case ProjectType.RPG: flow.push(StepId.RPGDetails); break;
-      case ProjectType.Strategy: flow.push(StepId.StrategyDetails); break;
-      case ProjectType.Party: flow.push(StepId.PartyDetails); break;
-      case ProjectType.Creative: flow.push(StepId.CreativeDetails); break;
-      case ProjectType.App: flow.push(StepId.AppDetails); break;
-      default: flow.push(StepId.ActionDetails); // Fallback
-    }
+    const types = data.projectType;
+    const hasType = (t: ProjectType) => types.includes(t);
+    const hasAnyType = (list: ProjectType[]) => list.some(t => hasType(t));
 
-    // Extended Features for Full Mode
-    if (data.speedMode !== SpeedMode.Quick) {
-      flow.push(StepId.Multiplayer);
-      flow.push(StepId.Progression);
-      flow.push(StepId.ContentLimits);
-    }
+    // Hybrid Genre Logic: Add all relevant steps based on selection
+    if (hasAnyType([ProjectType.Action, ProjectType.Music])) flow.push(StepId.ActionDetails);
+    if (hasAnyType([ProjectType.Puzzle, ProjectType.Educational])) flow.push(StepId.PuzzleDetails);
+    if (hasAnyType([ProjectType.RPG, ProjectType.VisualNovel])) flow.push(StepId.RPGDetails);
+    if (hasAnyType([ProjectType.Strategy, ProjectType.Simulation])) flow.push(StepId.StrategyDetails);
+    
+    if (hasType(ProjectType.Party)) flow.push(StepId.PartyDetails);
+    if (hasType(ProjectType.Creative)) flow.push(StepId.CreativeDetails);
+    if (hasType(ProjectType.App)) flow.push(StepId.AppDetails);
+    
+    // Module Checks
+    const isFull = data.speedMode === SpeedMode.Full;
+    const isCustom = data.speedMode === SpeedMode.Custom;
+    
+    // Helper to check if a custom section is selected
+    const hasSection = (id: string) => isFull || (isCustom && data.customSections.includes(id));
+
+    if (hasSection('multiplayer')) flow.push(StepId.Multiplayer);
+    if (hasSection('progression')) flow.push(StepId.Progression);
+    if (hasSection('safety')) flow.push(StepId.ContentLimits);
 
     flow.push(StepId.Finish);
     return flow;
-  }, [data.projectType, data.speedMode]);
+  }, [data.projectType, data.speedMode, data.customSections]);
 
   const currentStepId = steps[currentStepIndex];
   const progressPercent = Math.round(((currentStepIndex + 1) / steps.length) * 100);
@@ -124,8 +152,17 @@ const App: React.FC = () => {
 
     switch (currentStepId) {
       case StepId.Start:
-        requireField('projectType', 'Required');
+        requireField('projectType', 'Select at least one type');
         requireField('speedMode', 'Required');
+        if (data.speedMode === SpeedMode.Custom && data.customSections.length === 0) {
+            newErrors['speedMode'] = 'Please select at least one module for Custom mode.';
+            isValid = false;
+        }
+        break;
+      case StepId.AboutYou:
+        requireField('authorName', 'Required');
+        requireField('authorInterests', 'Pick at least one!');
+        requireField('playerType', 'Required');
         break;
       case StepId.CoreIdentity:
         requireField('title', 'Required');
@@ -210,46 +247,57 @@ const App: React.FC = () => {
 
   const generateFinalPrompt = () => {
     const isFull = data.speedMode === SpeedMode.Full;
+    const isCustom = data.speedMode === SpeedMode.Custom;
+    const hasSection = (id: string) => isFull || (isCustom && data.customSections.includes(id));
     
-    // Construct Genre Specific Section
-    let genreDetails = '';
-    if (data.projectType === ProjectType.Action) {
-        genreDetails = `
-### ACTION SPECS
-- **Genre:** ${data.actionGenre}
+    // Construct Genre Specific Sections
+    let allGenreDetails = '';
+    const types = data.projectType;
+    const hasType = (t: ProjectType) => types.includes(t);
+    const hasAnyType = (list: ProjectType[]) => list.some(t => hasType(t));
+
+    if (hasAnyType([ProjectType.Action, ProjectType.Music])) {
+        allGenreDetails += `
+### ACTION / RHYTHM SPECS
+- **Sub-Genre:** ${data.actionGenre}
 - **Perspective:** ${data.actionView}
 - **Mechanics:** ${data.actionMechanics?.join(', ')}
         `;
-    } else if (data.projectType === ProjectType.Puzzle) {
-        genreDetails = `
-### PUZZLE SPECS
+    }
+    if (hasAnyType([ProjectType.Puzzle, ProjectType.Educational])) {
+        allGenreDetails += `
+### PUZZLE / LOGIC SPECS
 - **Type:** ${data.puzzleType}
 - **Core Mechanic:** ${data.puzzleMechanic}
 - **Level Generation:** ${data.puzzleLevelGen}
         `;
-    } else if (data.projectType === ProjectType.RPG) {
-        genreDetails = `
-### RPG SPECS
+    }
+    if (hasAnyType([ProjectType.RPG, ProjectType.VisualNovel])) {
+        allGenreDetails += `
+### RPG / NARRATIVE SPECS
 - **Setting:** ${data.rpgSetting}
 - **Combat:** ${data.rpgCombat}
 - **Progression:** ${data.rpgClassSystem}
         `;
-    } else if (data.projectType === ProjectType.Strategy) {
-        genreDetails = `
-### SIMULATION SPECS
+    }
+    if (hasAnyType([ProjectType.Strategy, ProjectType.Simulation])) {
+        allGenreDetails += `
+### SIMULATION / STRATEGY SPECS
 - **Type:** ${data.simType}
 - **Main Resource:** ${data.simGoal}
 - **Economy:** ${data.simEconomy}
         `;
-    } else if (data.projectType === ProjectType.App) {
-        genreDetails = `
+    }
+    if (hasType(ProjectType.App)) {
+        allGenreDetails += `
 ### APP SPECS
 - **Archetype:** ${data.appType}
 - **Data Strategy:** ${data.appDataModel}
 - **UI Density:** ${data.appUiDensity}
         `;
-    } else if (data.projectType === ProjectType.Party) {
-        genreDetails = `
+    }
+    if (hasType(ProjectType.Party)) {
+        allGenreDetails += `
 ### PARTY SPECS
 - **Players:** ${data.partyPlayers}
 - **Format:** ${data.partyMatchFormat}
@@ -257,16 +305,31 @@ const App: React.FC = () => {
 - **Minigame Concepts:** ${data.partyMinigames.map(m => m.name).join(', ')}
         `;
     }
+    if (hasType(ProjectType.Creative)) {
+        allGenreDetails += `
+### CREATIVE TOOL SPECS
+- **Tool Type:** ${data.creativeToolType}
+- **Output:** ${data.creativeOutput}
+        `;
+    }
+
+    const themeString = [...(data.themes || []), data.customTheme].filter(Boolean).join(' + ');
 
     const prompt = `
-# PROJECT BLUEPRINT: ${data.projectType?.toUpperCase()}
+# PROJECT BLUEPRINT: ${data.projectType.map(t => t.split('/')[0].trim()).join(' + ').toUpperCase()}
 **Target Model:** Gemini 3 Pro (Expert Reasoning)
 **Title:** ${data.title}
 **Pitch:** ${data.pitch}
 
+## CREATOR PROFILE
+- **Builder Name:** ${data.authorName}
+- **Player Personality:** ${data.playerType}
+- **Interests:** ${data.authorInterests.join(', ')}
+*System Note: Infuse the game's flavor text, easter eggs, and visual details with these interests.*
+
 ## VISUAL IDENTITY
 - **Vibe:** ${data.vibes.join(', ')} ${data.vibeOther ? `(${data.vibeOther})` : ''}
-- **Theme:** ${data.theme || 'N/A'}
+- **Theme/Setting:** ${themeString || 'N/A'}
 - **Color Palette:** ${data.colorTheme}
 - **Intensity:** ${data.intensity}/5
 
@@ -276,17 +339,13 @@ const App: React.FC = () => {
 - **Audio:** ${data.includeSound ? `Procedural Web Audio (${data.audioStyle})` : 'None'}
 - **Deployment:** Single-file HTML/JS/CSS or Standard Vite React.
 
-${genreDetails}
+${allGenreDetails}
 
-${isFull ? `
 ## EXTENDED SYSTEMS
-- **Multiplayer:** ${data.mpPlayerCount} Players (${data.mpStyle.join(', ')})
-- **Input:** ${data.mpControls}
-- **Progression:** ${data.progressionFeatures.join(', ')}
-- **Persistence:** ${data.saveProgress}
-- **Content Boundary:** Allow [${data.allowedVibes.join(', ')}], BAN [${data.notAllowed.join(', ')}]
-- **Accessibility:** ${data.accessibilityFeatures?.join(', ') || 'Standard'}
-` : ''}
+${hasSection('multiplayer') ? `- **Multiplayer:** ${data.mpPlayerCount} Players (${data.mpStyle.join(', ')})\n- **Input:** ${data.mpControls}` : ''}
+${hasSection('progression') ? `- **Progression:** ${data.progressionFeatures.join(', ')}\n- **Persistence:** ${data.saveProgress}` : ''}
+${hasSection('safety') ? `- **Content Boundary:** Allow [${data.allowedVibes.join(', ')}], BAN [${data.notAllowed.join(', ')}]` : ''}
+${hasSection('accessibility') ? `- **Accessibility:** ${data.accessibilityFeatures?.join(', ') || 'Standard'}` : ''}
 
 ## SPECIAL INSTRUCTIONS
 ${data.extras || 'Ensure code is clean, commented, and performant.'}
@@ -299,6 +358,7 @@ ${data.extras || 'Ensure code is clean, commented, and performant.'}
     const props = { data, update: updateData, errors };
     switch (currentStepId) {
       case StepId.Start: return <StepStart {...props} />;
+      case StepId.AboutYou: return <StepAboutYou {...props} />;
       case StepId.CoreIdentity: return <StepCoreIdentity {...props} />;
       case StepId.Visuals: return <StepVisuals {...props} />;
       
@@ -381,54 +441,61 @@ ${data.extras || 'Ensure code is clean, commented, and performant.'}
   }
 
   return (
-    <div className="min-h-screen flex flex-col max-w-3xl mx-auto bg-white shadow-2xl min-[800px]:my-8 min-[800px]:rounded-3xl overflow-hidden border border-slate-100 ring-1 ring-slate-900/5">
+    <div className="min-h-screen flex flex-col max-w-3xl mx-auto bg-white dark:bg-slate-900 shadow-2xl min-[800px]:my-8 min-[800px]:rounded-3xl overflow-hidden border border-slate-100 dark:border-slate-800 ring-1 ring-slate-900/5 dark:ring-white/10 transition-colors duration-300">
       
       {/* Header */}
-      <div className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-100 px-8 py-5">
+      <div className="sticky top-0 z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-8 py-5 transition-colors duration-300">
         <div className="flex justify-between items-center mb-3">
-            <h1 className="text-xl font-bold text-slate-800 flex items-center gap-3">
-                <div className="bg-indigo-100 p-2 rounded-lg text-indigo-600">
+            <h1 className="text-xl font-bold text-slate-800 dark:text-slate-100 flex items-center gap-3">
+                <div className="bg-indigo-100 dark:bg-indigo-900/30 p-2 rounded-lg text-indigo-600 dark:text-indigo-400">
                     <Sparkles size={20} />
                 </div>
                 Game Builder Brief
             </h1>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
+               <button
+                  onClick={() => setDarkMode(!darkMode)}
+                  className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                  aria-label="Toggle Dark Mode"
+               >
+                  {darkMode ? <Sun size={18} /> : <Moon size={18} />}
+               </button>
                {deferredPrompt && (
                    <button 
                     onClick={handleInstallClick}
-                    className="flex items-center gap-2 bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-slate-700 transition-colors animate-pulse"
+                    className="flex items-center gap-2 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 px-4 py-2 rounded-lg text-sm font-bold hover:bg-slate-700 dark:hover:bg-slate-200 transition-colors animate-pulse"
                    >
                      <Download size={16}/> Install App
                    </button>
                )}
-               <span className="text-xs font-bold bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full uppercase tracking-wider">
+               <span className="text-xs font-bold bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 px-3 py-1 rounded-full uppercase tracking-wider">
                    Step {currentStepIndex + 1} of {steps.length}
                </span>
             </div>
         </div>
-        <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+        <div className="h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
             <div 
-                className="h-full bg-indigo-600 transition-all duration-500 ease-out rounded-full"
+                className="h-full bg-indigo-600 dark:bg-indigo-500 transition-all duration-500 ease-out rounded-full"
                 style={{ width: `${progressPercent}%` }}
             />
         </div>
       </div>
 
       {/* Main Content */}
-      <main className="flex-1 px-8 py-8 overflow-y-auto">
+      <main className="flex-1 px-8 py-8 overflow-y-auto bg-white dark:bg-slate-900 transition-colors duration-300">
         {renderStep()}
       </main>
 
       {/* Footer */}
-      <div className="sticky bottom-0 bg-white border-t border-slate-100 p-8 pt-4 flex justify-between items-center gap-4">
+      <div className="sticky bottom-0 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 p-8 pt-4 flex justify-between items-center gap-4 transition-colors duration-300">
         <button
           onClick={handleBack}
           disabled={currentStepIndex === 0}
           className={`
             px-6 py-4 rounded-xl font-bold transition-colors flex items-center gap-2
             ${currentStepIndex === 0 
-                ? 'text-slate-300 cursor-not-allowed' 
-                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}
+                ? 'text-slate-300 dark:text-slate-700 cursor-not-allowed' 
+                : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'}
           `}
         >
           <ArrowLeft size={20} />
@@ -437,7 +504,7 @@ ${data.extras || 'Ensure code is clean, commented, and performant.'}
 
         <button
           onClick={handleNext}
-          className="flex-1 max-w-[240px] bg-slate-900 hover:bg-indigo-600 text-white px-6 py-4 rounded-xl font-bold shadow-xl shadow-slate-200 hover:shadow-indigo-200 transition-all transform active:scale-[0.98] flex items-center justify-center gap-3"
+          className="flex-1 max-w-[240px] bg-slate-900 dark:bg-indigo-600 hover:bg-indigo-600 dark:hover:bg-indigo-500 text-white px-6 py-4 rounded-xl font-bold shadow-xl shadow-slate-200 dark:shadow-none hover:shadow-indigo-200 transition-all transform active:scale-[0.98] flex items-center justify-center gap-3"
         >
           {currentStepIndex === steps.length - 1 ? 'Generate' : 'Continue'}
           {currentStepIndex !== steps.length - 1 && <ArrowRight size={20} />}

@@ -3,15 +3,20 @@ export enum ProjectType {
   Action = 'Action / Arcade',
   Puzzle = 'Puzzle / Logic',
   RPG = 'RPG / Adventure',
-  Strategy = 'Strategy / Sim',
+  Strategy = 'Strategy / Tactics',
+  Simulation = 'Simulation / Tycoon',
   Party = 'Party / Minigames',
   Creative = 'Creative / Art Tool',
   App = 'Utility / Productivity',
+  Educational = 'Educational / Trivia',
+  Music = 'Music / Rhythm',
+  VisualNovel = 'Visual Novel',
 }
 
 export enum SpeedMode {
   Quick = 'Quick (2 min)',
   Full = 'Full (5 min)',
+  Custom = 'Custom (Build Your Own)',
 }
 
 export enum RenderStyle {
@@ -45,23 +50,30 @@ export interface Minigame {
 
 export interface FormData {
   // Section 1: Start
-  projectType: ProjectType | null;
+  projectType: ProjectType[]; // Changed to Array for Hybrid Genres
   speedMode: SpeedMode | null;
+  customSections: string[];
+
+  // Section 1.5: About You (New)
+  authorName: string;
+  authorInterests: string[];
+  playerType: string;
 
   // Section 2: Core Identity
   title: string;
   pitch: string;
   vibes: string[];
   vibeOther: string;
+  themes: string[]; // New: Selected generic themes
+  customTheme: string; // Renamed from 'theme' for specific details
   intensity: number;
-  theme: string;
 
   // Section 2.5: Visuals & Tech
   renderStyle: string;
   assetStyle: string;
   colorTheme: string;
   includeSound: boolean;
-  audioStyle: string; // New: Specific style of audio
+  audioStyle: string;
 
   // --- GENRE SPECIFIC FIELDS ---
 
@@ -73,7 +85,7 @@ export interface FormData {
   // Puzzle
   puzzleType: string;
   puzzleMechanic: string;
-  puzzleLevelGen: string; // Random vs Handcrafted
+  puzzleLevelGen: string;
 
   // RPG
   rpgSetting: string;
@@ -83,14 +95,14 @@ export interface FormData {
 
   // Strategy / Sim
   simType: string;
-  simGoal: string; // Money, Survival, domination
-  simEconomy: string; // Simple, Complex
+  simGoal: string;
+  simEconomy: string;
 
   // Creative
-  creativeToolType: string; // Drawing, Music, Text
-  creativeOutput: string; // Image, Sound, Story
+  creativeToolType: string;
+  creativeOutput: string;
 
-  // Party (Existing)
+  // Party
   partyPlayers: string;
   partyRoundLength: string;
   partyMatchFormat: string;
@@ -99,9 +111,9 @@ export interface FormData {
   partyMinigames: Minigame[];
 
   // App
-  appType: string; // Dashboard, Tracker, Social
-  appDataModel: string; // LocalStorage, Mock API
-  appUiDensity: string; // Spacious, Dense
+  appType: string;
+  appDataModel: string;
+  appUiDensity: string;
 
   // --- SYSTEMS ---
   
@@ -122,7 +134,7 @@ export interface FormData {
   notAllowed: string[];
   notAllowedOther: string;
   
-  // Accessibility (New)
+  // Accessibility
   accessibilityFeatures: string[];
 
   // Finish
@@ -130,14 +142,21 @@ export interface FormData {
 }
 
 export const INITIAL_DATA: FormData = {
-  projectType: null,
+  projectType: [],
   speedMode: null,
+  customSections: [],
+  
+  authorName: '',
+  authorInterests: [],
+  playerType: '',
+
   title: '',
   pitch: '',
   vibes: [],
   vibeOther: '',
+  themes: [],
+  customTheme: '',
   intensity: 3,
-  theme: '',
   
   renderStyle: '',
   assetStyle: '',
@@ -204,6 +223,7 @@ export const INITIAL_DATA: FormData = {
 
 export enum StepId {
   Start = 'Start',
+  AboutYou = 'About You',
   CoreIdentity = 'Core Identity',
   Visuals = 'Tech Stack',
   

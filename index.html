@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -6,6 +7,11 @@
     <title>Game Builder Brief</title>
     <link rel="manifest" href="./manifest.json">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+      }
+    </script>
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
       body {
@@ -18,12 +24,21 @@
       ::-webkit-scrollbar-track {
         background: #f1f5f9;
       }
+      .dark ::-webkit-scrollbar-track {
+        background: #0f172a;
+      }
       ::-webkit-scrollbar-thumb {
         background: #cbd5e1;
         border-radius: 4px;
       }
+      .dark ::-webkit-scrollbar-thumb {
+        background: #334155;
+      }
       ::-webkit-scrollbar-thumb:hover {
         background: #94a3b8;
+      }
+      .dark ::-webkit-scrollbar-thumb:hover {
+        background: #475569;
       }
     </style>
   <script type="importmap">
@@ -37,7 +52,7 @@
 }
 </script>
 </head>
-  <body class="bg-slate-50 text-slate-900 antialiased selection:bg-indigo-100 selection:text-indigo-700">
+  <body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased selection:bg-indigo-100 selection:text-indigo-700 dark:selection:bg-indigo-900 dark:selection:text-indigo-300">
     <div id="root"></div>
     <script>
       if ('serviceWorker' in navigator) {
